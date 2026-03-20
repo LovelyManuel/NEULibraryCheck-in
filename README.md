@@ -1,5 +1,7 @@
-# Firebase Studio
+# NEULibraryPortal
 
-This is a NextJS starter in Firebase Studio.
+## Repository
+**[GitHub Repository](https://courses.cognitiveclass.ai/certificates/b5a2699e68d44280a0d95558d21f05fe) - GitHub**
 
-To get started, take a look at src/app/page.tsx.
+## Live Demo
+**[Deployed Application](https://courses.cognitiveclass.ai/certificates/b5a2699e68d44280a0d95558d21f05fe) - Application**
