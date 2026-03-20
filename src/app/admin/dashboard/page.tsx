@@ -53,7 +53,17 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 
-const COLORS = ['#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899'];
+/**
+ * EXPANDED COLOR PALETTE
+ * A more diverse set of colors to ensure distinct visual representation 
+ * for all colleges and purposes.
+ */
+const COLORS = [
+  '#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899',
+  '#F43F5E', '#8B5CF6', '#06B6D4', '#84CC16', '#EAB308', '#F97316',
+  '#EF4444', '#64748B', '#0891B2', '#059669', '#D97706', '#4F46E5',
+  '#DB2777', '#7C3AED'
+];
 
 interface PageProps {
   params: Promise<any>;
