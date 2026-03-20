@@ -18,6 +18,38 @@ import Image from "next/image";
 import placeholderData from "@/app/lib/placeholder-images.json";
 import { ThemeToggle } from "../admin/components/theme-toggle";
 
+const COLLEGE_PROGRAMS: Record<string, string[]> = {
+  "nursing": ["BS Nursing"],
+  "engineering": [
+    "BS Civil Engineering", 
+    "BS Electrical Engineering", 
+    "BS Mechanical Engineering", 
+    "BS Electronics Engineering", 
+    "BS Industrial Engineering"
+  ],
+  "arts-sciences": [
+    "AB Communication", 
+    "AB Political Science", 
+    "BS Psychology", 
+    "BS Biology"
+  ],
+  "education": [
+    "Bachelor of Elementary Education", 
+    "Bachelor of Secondary Education"
+  ],
+  "business-administration": [
+    "BS Accountancy", 
+    "BS Business Administration", 
+    "BS Entrepreneurship", 
+    "BS Tourism Management"
+  ],
+  "computer-studies": [
+    "BS Computer Science", 
+    "BS Information Technology", 
+    "BS Information Systems"
+  ]
+};
+
 interface PageProps {
   params: Promise<any>;
   searchParams: Promise<any>;
@@ -71,6 +103,11 @@ export default function CheckInPage(props: PageProps) {
     fetchColleges();
   }, [firestore]);
 
+  // Reset program when college changes
+  useEffect(() => {
+    setProgram("");
+  }, [collegeId]);
+
   // Timer logic for redirection
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -123,6 +160,8 @@ export default function CheckInPage(props: PageProps) {
   const currentCollegeName = collegeId === "others" 
     ? otherCollegeName 
     : colleges.find(c => c.id === collegeId)?.name || "Unassigned";
+
+  const availablePrograms = COLLEGE_PROGRAMS[collegeId] || [];
 
   if (submitted) {
     return (
@@ -310,14 +349,27 @@ export default function CheckInPage(props: PageProps) {
                     <div className="space-y-2">
                       <Label htmlFor="program" className="text-xs font-bold uppercase tracking-wider text-slate-400">Program / Course</Label>
                       <div className="relative">
-                        <Input 
-                          id="program"
-                          placeholder="e.g. BSCS, BSN, BSA"
-                          className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
-                          value={program}
-                          onChange={(e) => setProgram(e.target.value)}
-                          required
-                        />
+                        {collegeId && collegeId !== "others" && availablePrograms.length > 0 ? (
+                          <Select value={program} onValueChange={setProgram} required>
+                            <SelectTrigger id="program" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl text-left">
+                              <SelectValue placeholder="Select program" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
+                              {availablePrograms.map(p => (
+                                <SelectItem key={p} value={p}>{p}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input 
+                            id="program"
+                            placeholder={collegeId === "others" ? "Enter your course" : "e.g. BSCS, BSN, BSA"}
+                            className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
+                            value={program}
+                            onChange={(e) => setProgram(e.target.value)}
+                            required
+                          />
+                        )}
                         <GraduationCap className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
                       </div>
                     </div>
