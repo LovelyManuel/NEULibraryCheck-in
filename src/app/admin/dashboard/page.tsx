@@ -600,7 +600,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                         <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
                           {visit.collegeName}
                         </td>
-                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
                           {visit.program || "N/A"}
                         </td>
                         <td className="py-5 px-6">

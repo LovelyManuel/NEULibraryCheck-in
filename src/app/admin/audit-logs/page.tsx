@@ -155,7 +155,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
           </div>
         </header>
 
-        <div className="p-6 lg:p-10 max-w-7xl auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 inline-block shadow-lg">
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Audit Logs</h1>
@@ -178,7 +178,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
             </div>
           </div>
 
-          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm overflow-hidden rounded-2xl">
+          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden">
             <CardHeader className="pb-3 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
               <div className="relative max-w-md w-full">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -219,7 +219,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                         <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium">
                           {visit.collegeName}
                         </td>
-                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium">
                           {visit.program || "N/A"}
                         </td>
                         <td className="py-5 px-6">
