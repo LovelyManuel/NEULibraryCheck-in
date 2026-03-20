@@ -189,7 +189,7 @@ export default function CheckInPage(props: PageProps) {
             <div className="space-y-4">
               <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-headline">Success!</h2>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-primary tracking-tight">Welcome, {profile?.displayName || user?.displayName}!</p>
+                <p className="text-2xl font-bold text-primary tracking-tight font-headline">Welcome, {profile?.displayName || user?.displayName}!</p>
                 <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium">
                   <span>{currentCollegeName}</span>
                   <span className="text-primary/70">{program}</span>
