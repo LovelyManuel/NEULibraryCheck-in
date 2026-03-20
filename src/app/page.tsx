@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth as useAuthContext } from '@/app/components/auth-context';
@@ -23,10 +24,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function Home(props: PageProps) {
+export default function Home({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(props.params);
-  use(props.searchParams);
+  use(params);
+  use(searchParams);
 
   const { user, profile, loading, signIn } = useAuthContext();
   const router = useRouter();
@@ -186,7 +187,7 @@ export default function Home(props: PageProps) {
 
       <footer className="absolute bottom-6 w-full text-center z-10 px-6 flex flex-col items-center gap-2">
         <p className="text-white text-sm font-bold tracking-widest font-sans">
-          New Era University Library &middot; Central, Quezon City
+          New Era University Library · Central, Quezon City
         </p>
         
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-white/80 text-[10px] md:text-xs font-medium">

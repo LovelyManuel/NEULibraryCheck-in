@@ -55,8 +55,6 @@ import { cn } from "@/lib/utils";
 
 /**
  * EXPANDED COLOR PALETTE
- * A more diverse set of colors to ensure distinct visual representation 
- * for all colleges and purposes.
  */
 const COLORS = [
   '#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899',
@@ -70,10 +68,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function AdminDashboard(props: PageProps) {
+export default function AdminDashboard({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(props.params);
-  use(props.searchParams);
+  use(params);
+  use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -382,9 +380,7 @@ export default function AdminDashboard(props: PageProps) {
               </Button>
 
               <div className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-xl border dark:border-slate-700 shadow-sm">
-                <Tabs value={range} onValueChange={(v) => {
-                  setRange(v as any);
-                }}>
+                <Tabs value={range} onValueChange={(v) => setRange(v as any)}>
                   <TabsList className="bg-transparent h-8">
                     <TabsTrigger value="today" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Today</TabsTrigger>
                     <TabsTrigger value="week" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Week</TabsTrigger>
@@ -407,9 +403,7 @@ export default function AdminDashboard(props: PageProps) {
                       <CalendarIcon className="mr-1.5 h-3 w-3" />
                       {customRange?.from ? (
                         customRange.to ? (
-                          <>
-                            {format(customRange.from, "MMM dd, yyyy")} - {format(customRange.to, "MMM dd, yyyy")}
-                          </>
+                          <>{format(customRange.from, "MMM dd, yyyy")} - {format(customRange.to, "MMM dd, yyyy")}</>
                         ) : (
                           format(customRange.from, "MMM dd, yyyy")
                         )
@@ -422,72 +416,35 @@ export default function AdminDashboard(props: PageProps) {
                     <div className="p-6 space-y-6">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white">Date Range</h3>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleResetRange} 
-                          className="h-8 text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium"
-                        >
-                          Reset
-                        </Button>
+                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="h-8 text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium">Reset</Button>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <button 
-                          onClick={() => {
-                            if (pendingRange?.from) setCalendarMonth(pendingRange.from);
-                          }}
-                          className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        >
+                        <button onClick={() => pendingRange?.from && setCalendarMonth(pendingRange.from)} className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                           <div className="flex flex-col text-left">
-                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">
-                              {pendingRange?.from ? format(pendingRange.from, "EEEE") : "From"}
-                            </span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                              {pendingRange?.from ? format(pendingRange.from, "dd MMMM, yyyy") : "Select date"}
-                            </span>
+                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">{pendingRange?.from ? format(pendingRange.from, "EEEE") : "From"}</span>
+                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pendingRange?.from ? format(pendingRange.from, "dd MMMM, yyyy") : "Select date"}</span>
                           </div>
                           <ChevronDown className="h-3 w-3 text-slate-400" />
                         </button>
                         <div className="text-slate-300 font-medium">To</div>
-                        <button 
-                          onClick={() => {
-                            if (pendingRange?.to) setCalendarMonth(pendingRange.to);
-                          }}
-                          className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        >
+                        <button onClick={() => pendingRange?.to && setCalendarMonth(pendingRange.to)} className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                           <div className="flex flex-col text-left">
-                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">
-                              {pendingRange?.to ? format(pendingRange.to, "EEEE") : "To"}
-                            </span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                              {pendingRange?.to ? format(pendingRange.to, "dd MMMM, yyyy") : "Select date"}
-                            </span>
+                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">{pendingRange?.to ? format(pendingRange.to, "EEEE") : "To"}</span>
+                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pendingRange?.to ? format(pendingRange.to, "dd MMMM, yyyy") : "Select date"}</span>
                           </div>
                           <ChevronDown className="h-3 w-3 text-slate-400" />
                         </button>
                       </div>
 
                       <div className="border rounded-2xl p-1 dark:border-slate-800 bg-white dark:bg-slate-900">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          month={calendarMonth}
-                          onMonthChange={setCalendarMonth}
-                          selected={pendingRange}
-                          onSelect={setPendingRange}
-                          numberOfMonths={1}
-                        />
+                        <Calendar initialFocus mode="range" month={calendarMonth} onMonthChange={setCalendarMonth} selected={pendingRange} onSelect={setPendingRange} numberOfMonths={1} />
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 hover:text-slate-900 dark:hover:white font-medium">
-                        Close
-                      </Button>
-                      <Button onClick={handleConfirmRange} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl shadow-lg shadow-primary/20">
-                        Confirm
-                      </Button>
+                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 hover:text-slate-900 dark:hover:white font-medium">Close</Button>
+                      <Button onClick={handleConfirmRange} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl shadow-lg shadow-primary/20">Confirm</Button>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -497,9 +454,7 @@ export default function AdminDashboard(props: PageProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="border-none shadow-xl bg-primary/95 backdrop-blur-sm text-white overflow-hidden rounded-2xl relative">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Users className="h-20 w-20" />
-              </div>
+              <div className="absolute top-0 right-0 p-4 opacity-10"><Users className="h-20 w-20" /></div>
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 relative z-10">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-80">Total Attendance</CardTitle>
                 <Users className="h-4 w-4 opacity-80" />
@@ -547,9 +502,7 @@ export default function AdminDashboard(props: PageProps) {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
                   <XAxis dataKey="time" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
                   <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                  <ChartTooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'var(--card)', color: 'var(--card-foreground)' }} 
-                  />
+                  <ChartTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'var(--card)', color: 'var(--card-foreground)' }} />
                   <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -567,21 +520,11 @@ export default function AdminDashboard(props: PageProps) {
                   <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
                     <XAxis type="number" hide />
                     <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                    <ChartTooltip 
-                      cursor={false}
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-2xl">
-                              <p className="text-[10px] font-bold text-white uppercase tracking-tight">
-                                {payload[0].payload.name} count: {payload[0].value}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
+                    <ChartTooltip cursor={false} content={({ active, payload }) => active && payload && payload.length ? (
+                      <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-2xl">
+                        <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].payload.name} count: {payload[0].value}</p>
+                      </div>
+                    ) : null} />
                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
                       {statsByCollege.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Bar>
@@ -598,116 +541,20 @@ export default function AdminDashboard(props: PageProps) {
               <CardContent className="h-[350px] px-0 pb-0 flex flex-col items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={statsByPurpose}
-                      cx="50%"
-                      cy="45%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="count"
-                      style={{ outline: 'none' }}
-                    >
-                      {statsByPurpose.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                      ))}
+                    <Pie data={statsByPurpose} cx="50%" cy="45%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="count" style={{ outline: 'none' }}>
+                      {statsByPurpose.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />)}
                     </Pie>
-                    <ChartTooltip 
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-xl">
-                              <p className="text-[10px] font-bold text-white uppercase tracking-tight">
-                                {payload[0].name}: {payload[0].value}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Legend 
-                      verticalAlign="bottom" 
-                      height={80} 
-                      iconType="circle"
-                      formatter={(value) => (
-                        <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">
-                          {value}
-                        </span>
-                      )}
-                    />
+                    <ChartTooltip content={({ active, payload }) => active && payload && payload.length ? (
+                      <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-xl">
+                        <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].name}: {payload[0].value}</p>
+                      </div>
+                    ) : null} />
+                    <Legend verticalAlign="bottom" height={80} iconType="circle" formatter={(value) => <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
-
-          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    Recent Activity
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                  </CardTitle>
-                  <CardDescription>Live monitoring of library entries</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                      <th className="py-4 px-6">Visitor</th>
-                      <th className="py-4 px-6">College</th>
-                      <th className="py-4 px-6">Program</th>
-                      <th className="py-4 px-6">Purpose</th>
-                      <th className="py-4 px-6 text-right">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100/50 dark:divide-slate-800/50">
-                    {visits.slice().reverse().slice(0, 10).map((visit) => (
-                      <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/20">
-                              {visit.userName?.charAt(0) || "U"}
-                            </div>
-                            <span className="font-bold text-slate-900 dark:text-slate-100 text-xs">{visit.userName || "Unknown"}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-[11px] text-slate-500 dark:text-slate-400">
-                          {visit.collegeName}
-                        </td>
-                        <td className="py-4 px-6 text-[11px] text-slate-500 dark:text-slate-400">
-                          {visit.program || "N/A"}
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-[9px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full border border-primary/10">
-                            {visit.purposeOfVisit}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">
-                            {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="p-4 border-t dark:border-slate-800 text-center">
-                <Button variant="link" size="sm" asChild className="text-[11px] text-primary font-bold">
-                  <Link href="/admin/audit-logs">View Full Audit Logs</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

@@ -29,10 +29,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function AuditLogsPage(props: PageProps) {
+export default function AuditLogsPage({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(props.params);
-  use(props.searchParams);
+  use(params);
+  use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -155,7 +155,7 @@ export default function AuditLogsPage(props: PageProps) {
           </div>
         </header>
 
-        <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-7xl auto space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 inline-block shadow-lg">
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Audit Logs</h1>

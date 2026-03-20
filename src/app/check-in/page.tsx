@@ -65,24 +65,46 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function CheckInPage(props: PageProps) {
+export default function CheckInPage({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(props.params);
-  use(props.searchParams);
+  use(params);
+  use(searchParams);
 
-  const { user, profile, logOut } = useAuth();
+  const { user, profile, loading, logOut } = useAuth();
   const { firestore } = useFirebase();
   const [colleges, setColleges] = useState<College[]>([]);
   const [purpose, setPurpose] = useState<string>("");
   const [collegeId, setCollegeId] = useState<string>("");
   const [program, setProgram] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const router = useRouter();
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
   const logoImage = 'https://neu.edu.ph/main/img/neu.png';
+
+  useEffect(() => {
+    // STRICT INSTITUTIONAL ENFORCEMENT
+    if (!loading) {
+      if (!user) {
+        router.push('/');
+        return;
+      }
+      
+      const email = user.email || "";
+      const isInstitutional = email.toLowerCase().endsWith("@neu.edu.ph");
+      const isAllowedAdmin = [
+        'francesaly11@gmail.com',
+        'jcesperanza@neu.edu.ph',
+        'admin@example.com'
+      ].some(admin => admin.toLowerCase() === email.toLowerCase());
+
+      if (!isInstitutional && !isAllowedAdmin) {
+        router.push('/');
+      }
+    }
+  }, [loading, user, router]);
 
   useEffect(() => {
     // Initialize colleges from the DEPARTMENTS record
@@ -114,7 +136,7 @@ export default function CheckInPage(props: PageProps) {
     const selectedCollege = colleges.find(c => c.id === collegeId);
     const finalCollegeName = selectedCollege?.name || "Unassigned";
 
-    setLoading(true);
+    setActionLoading(true);
     try {
       await addDoc(collection(firestore, "visits"), {
         userId: user.uid,
@@ -129,7 +151,7 @@ export default function CheckInPage(props: PageProps) {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -138,12 +160,20 @@ export default function CheckInPage(props: PageProps) {
 
   const getGreetingName = () => {
     const fullName = profile?.displayName || user?.displayName || "";
-    const parts = fullName.split(" ");
+    const parts = fullName.split(" ").filter(p => p.length > 0);
     if (parts.length >= 2) {
       return `${parts[0]} ${parts[1]}`;
     }
     return parts[0] || "Student";
   };
+
+  if (loading || (!user && !submitted)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -333,9 +363,9 @@ export default function CheckInPage(props: PageProps) {
                   <Button 
                     type="submit" 
                     className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-primary/20 transition-all rounded-xl active:scale-95" 
-                    disabled={loading || !purpose || !collegeId || !program}
+                    disabled={actionLoading || !purpose || !collegeId || !program}
                   >
-                    {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Complete Check-in"}
+                    {actionLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Complete Check-in"}
                   </Button>
                 </form>
               </CardContent>
