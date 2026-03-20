@@ -1,10 +1,10 @@
 # 📘 NEULibraryPortal
 
 ## Repository
-**[GitHub Repository](https://courses.cognitiveclass.ai/certificates/b5a2699e68d44280a0d95558d21f05fe) - GitHub**
+**[GitHub Repository](https://github.com/LovelyManuel/NEULibraryCheck-in.git) - GitHub**
 
 ## Live Demo
-**[Deployed Application](https://courses.cognitiveclass.ai/certificates/b5a2699e68d44280a0d95558d21f05fe) - Application**
+**[Deployed Application](https://discordapp.com/channels/1466350654413996158/1466350655223500948/1484567902026989742) - Application**
 
 ## Preview
 
