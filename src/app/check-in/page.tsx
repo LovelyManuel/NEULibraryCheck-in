@@ -5,13 +5,12 @@ import { useState, useEffect, use } from "react";
 import { useAuth } from "@/app/components/auth-context";
 import { collection, addDoc, getDocs, Timestamp, query, orderBy } from "firebase/firestore";
 import { useFirebase } from "@/firebase";
-import { VISIT_PURPOSES, College } from "@/app/lib/types";
+import { VISIT_PURPOSES, College, DEPARTMENTS } from "@/app/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Library, Pencil, Clock, Check, GraduationCap } from "lucide-react";
+import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Clock, Check, GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,35 +18,46 @@ import placeholderData from "@/app/lib/placeholder-images.json";
 import { ThemeToggle } from "../admin/components/theme-toggle";
 
 const COLLEGE_PROGRAMS: Record<string, string[]> = {
-  "nursing": ["BS Nursing"],
-  "engineering": [
+  "LIBRARY": ["Staff / Faculty"],
+  "ABM": ["BS Accountancy"],
+  "CAS": [
+    "AB Communication", 
+    "AB Political Science", 
+    "BS Psychology", 
+    "BS Biology"
+  ],
+  "CBA": [
+    "BS Business Administration", 
+    "BS Entrepreneurship", 
+    "BS Tourism Management"
+  ],
+  "CEA": [
+    "BS Architecture",
     "BS Civil Engineering", 
     "BS Electrical Engineering", 
     "BS Mechanical Engineering", 
     "BS Electronics Engineering", 
     "BS Industrial Engineering"
   ],
-  "arts-sciences": [
-    "AB Communication", 
-    "AB Political Science", 
-    "BS Psychology", 
-    "BS Biology"
-  ],
-  "education": [
+  "CED": [
     "Bachelor of Elementary Education", 
     "Bachelor of Secondary Education"
   ],
-  "business-administration": [
-    "BS Accountancy", 
-    "BS Business Administration", 
-    "BS Entrepreneurship", 
-    "BS Tourism Management"
-  ],
-  "computer-studies": [
+  "CICS": [
     "BS Computer Science", 
     "BS Information Technology", 
     "BS Information Systems"
-  ]
+  ],
+  "CMT": ["BS Medical Technology"],
+  "COA": ["BS Agriculture"],
+  "COC": ["AB Communication"],
+  "COM": ["BS Midwifery"],
+  "COMS": ["BM Music"],
+  "CON": ["BS Nursing"],
+  "CPT": ["BS Physical Therapy"],
+  "CRIM": ["BS Criminology"],
+  "CRT": ["BS Respiratory Therapy"],
+  "SOIR": ["AB International Relations"]
 };
 
 interface PageProps {
@@ -64,9 +74,7 @@ export default function CheckInPage(props: PageProps) {
   const { firestore } = useFirebase();
   const [colleges, setColleges] = useState<College[]>([]);
   const [purpose, setPurpose] = useState<string>("");
-  const [otherPurpose, setOtherPurpose] = useState<string>("");
   const [collegeId, setCollegeId] = useState<string>("");
-  const [otherCollegeName, setOtherCollegeName] = useState<string>("");
   const [program, setProgram] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -77,38 +85,18 @@ export default function CheckInPage(props: PageProps) {
   const logoImage = 'https://neu.edu.ph/main/img/neu.png';
 
   useEffect(() => {
-    const fetchColleges = async () => {
-      if (!firestore) return;
-      try {
-        const q = query(collection(firestore, "colleges"), orderBy("name"));
-        const snapshot = await getDocs(q);
-        const list = snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name } as College));
-        const uniqueColleges = [
-          { id: "nursing", name: "Nursing" },
-          { id: "engineering", name: "Engineering" },
-          { id: "arts-sciences", name: "Arts & Sciences" },
-          { id: "education", name: "Education" },
-          { id: "business-administration", name: "Business Administration" },
-          { id: "computer-studies", name: "Computer Studies" }
-        ];
-        list.forEach(c => {
-          if (!uniqueColleges.find(dc => dc.id === c.id)) uniqueColleges.push(c);
-        });
-        setColleges(uniqueColleges);
-      } catch (e) {
-        setColleges([]);
-      }
-    };
+    // Initialize colleges from the DEPARTMENTS record
+    const list = Object.entries(DEPARTMENTS).map(([id, name]) => ({
+      id,
+      name
+    }));
+    setColleges(list);
+  }, []);
 
-    fetchColleges();
-  }, [firestore]);
-
-  // Reset program when college changes
   useEffect(() => {
     setProgram("");
   }, [collegeId]);
 
-  // Timer logic for redirection
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (submitted && countdown > 0) {
@@ -123,20 +111,8 @@ export default function CheckInPage(props: PageProps) {
     e.preventDefault();
     if (!user || !purpose || !collegeId || !firestore || !program) return;
 
-    let finalPurpose = purpose;
-    if (purpose === "Others") {
-      if (!otherPurpose.trim()) return;
-      finalPurpose = otherPurpose.trim();
-    }
-
-    let finalCollegeName = "";
-    if (collegeId === "others") {
-      if (!otherCollegeName.trim()) return;
-      finalCollegeName = otherCollegeName.trim();
-    } else {
-      const selectedCollege = colleges.find(c => c.id === collegeId);
-      finalCollegeName = selectedCollege?.name || "Unassigned";
-    }
+    const selectedCollege = colleges.find(c => c.id === collegeId);
+    const finalCollegeName = selectedCollege?.name || "Unassigned";
 
     setLoading(true);
     try {
@@ -144,7 +120,7 @@ export default function CheckInPage(props: PageProps) {
         userId: user.uid,
         userName: user.displayName,
         timestamp: Timestamp.now(),
-        purposeOfVisit: finalPurpose,
+        purposeOfVisit: purpose,
         collegeId: collegeId,
         collegeName: finalCollegeName,
         program: program
@@ -157,10 +133,7 @@ export default function CheckInPage(props: PageProps) {
     }
   };
 
-  const currentCollegeName = collegeId === "others" 
-    ? otherCollegeName 
-    : colleges.find(c => c.id === collegeId)?.name || "Unassigned";
-
+  const currentCollegeName = colleges.find(c => c.id === collegeId)?.name || "Unassigned";
   const availablePrograms = COLLEGE_PROGRAMS[collegeId] || [];
 
   if (submitted) {
@@ -308,23 +281,6 @@ export default function CheckInPage(props: PageProps) {
                         </SelectContent>
                       </Select>
                     </div>
-
-                    {purpose === "Others" && (
-                      <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                        <Label htmlFor="otherPurpose" className="text-xs font-bold uppercase tracking-wider text-slate-400">Specify Purpose</Label>
-                        <div className="relative">
-                          <Input 
-                            id="otherPurpose"
-                            placeholder="Type your purpose here..."
-                            className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
-                            value={otherPurpose}
-                            onChange={(e) => setOtherPurpose(e.target.value)}
-                            required
-                          />
-                          <Pencil className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -339,7 +295,6 @@ export default function CheckInPage(props: PageProps) {
                             {colleges.map(c => (
                               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                             ))}
-                            <SelectItem value="others">Others (Specify below)</SelectItem>
                           </SelectContent>
                         </Select>
                         <School className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
@@ -349,53 +304,25 @@ export default function CheckInPage(props: PageProps) {
                     <div className="space-y-2">
                       <Label htmlFor="program" className="text-xs font-bold uppercase tracking-wider text-slate-400">Program / Course</Label>
                       <div className="relative">
-                        {collegeId !== "others" ? (
-                          <Select value={program} onValueChange={setProgram} disabled={!collegeId} required>
-                            <SelectTrigger id="program" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl text-left">
-                              <SelectValue placeholder={!collegeId ? "Select college first" : "Select program"} />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
-                              {availablePrograms.map(p => (
-                                <SelectItem key={p} value={p}>{p}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Input 
-                            id="program"
-                            placeholder="Enter your course"
-                            className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
-                            value={program}
-                            onChange={(e) => setProgram(e.target.value)}
-                            required
-                          />
-                        )}
+                        <Select value={program} onValueChange={setProgram} disabled={!collegeId} required>
+                          <SelectTrigger id="program" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl text-left">
+                            <SelectValue placeholder={!collegeId ? "Select college first" : "Select program"} />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
+                            {availablePrograms.map(p => (
+                              <SelectItem key={p} value={p}>{p}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <GraduationCap className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
                       </div>
                     </div>
                   </div>
 
-                  {collegeId === "others" && (
-                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                      <Label htmlFor="otherCollege" className="text-xs font-bold uppercase tracking-wider text-slate-400">Specify College Name</Label>
-                      <div className="relative">
-                        <Input 
-                          id="otherCollege"
-                          placeholder="Type your college name here..."
-                          className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
-                          value={otherCollegeName}
-                          onChange={(e) => setOtherCollegeName(e.target.value)}
-                          required
-                        />
-                        <Pencil className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
-                      </div>
-                    </div>
-                  )}
-
                   <Button 
                     type="submit" 
                     className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-primary/20 transition-all rounded-xl active:scale-95" 
-                    disabled={loading || !purpose || !collegeId || !program || (collegeId === "others" && !otherCollegeName.trim()) || (purpose === "Others" && !otherPurpose.trim())}
+                    disabled={loading || !purpose || !collegeId || !program}
                   >
                     {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Complete Check-in"}
                   </Button>

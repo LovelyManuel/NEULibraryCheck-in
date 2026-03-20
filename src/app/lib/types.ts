@@ -35,6 +35,25 @@ export const VISIT_PURPOSES = [
   "Book Return",
   "Book Borrowing",
   "Clearance",
-  "Internet Usage",
-  "Others"
+  "Internet Usage"
 ];
+
+export const DEPARTMENTS: Record<string, string> = {
+  LIBRARY: 'Library',
+  ABM:     'College of Accountancy',
+  CAS:     'College of Arts and Sciences',
+  CBA:     'College of Business Administration',
+  CEA:     'College of Engineering and Architecture',
+  CED:     'College of Education',
+  CICS:    'College of Informatics and Computing Studies',
+  CMT:     'College of Medical Technology',
+  COA:     'College of Agriculture',
+  COC:     'College of Communication',
+  COM:     'College of Midwifery',
+  COMS:    'College of Music',
+  CON:     'College of Nursing',
+  CPT:     'College of Physical Therapy',
+  CRIM:    'College of Criminology',
+  CRT:     'College of Respiratory Therapy',
+  SOIR:    'School of International Relations'
+};
