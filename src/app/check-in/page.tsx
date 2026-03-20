@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Library, Pencil, Clock, Check } from "lucide-react";
+import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Library, Pencil, Clock, Check, GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,8 +35,10 @@ export default function CheckInPage(props: PageProps) {
   const [otherPurpose, setOtherPurpose] = useState<string>("");
   const [collegeId, setCollegeId] = useState<string>("");
   const [otherCollegeName, setOtherCollegeName] = useState<string>("");
+  const [program, setProgram] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [countdown, setCountdown] = useState(10);
   const router = useRouter();
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
@@ -69,9 +71,20 @@ export default function CheckInPage(props: PageProps) {
     fetchColleges();
   }, [firestore]);
 
+  // Timer logic for redirection
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (submitted && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (submitted && countdown === 0) {
+      router.push('/');
+    }
+    return () => clearTimeout(timer);
+  }, [submitted, countdown, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !purpose || !collegeId || !firestore) return;
+    if (!user || !purpose || !collegeId || !firestore || !program) return;
 
     let finalPurpose = purpose;
     if (purpose === "Others") {
@@ -96,7 +109,8 @@ export default function CheckInPage(props: PageProps) {
         timestamp: Timestamp.now(),
         purposeOfVisit: finalPurpose,
         collegeId: collegeId,
-        collegeName: finalCollegeName
+        collegeName: finalCollegeName,
+        program: program
       });
       setSubmitted(true);
     } catch (error) {
@@ -106,9 +120,13 @@ export default function CheckInPage(props: PageProps) {
     }
   };
 
+  const currentCollegeName = collegeId === "others" 
+    ? otherCollegeName 
+    : colleges.find(c => c.id === collegeId)?.name || "Unassigned";
+
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden transition-colors duration-300">
         <div className="fixed inset-0 z-0">
           {bgImage && (
             <Image 
@@ -122,31 +140,37 @@ export default function CheckInPage(props: PageProps) {
           )}
           <div className="absolute inset-0 bg-slate-100/60 dark:bg-slate-950/70 backdrop-blur-md" />
         </div>
-        <Card className="w-full max-w-lg overflow-hidden border-none shadow-2xl animate-in zoom-in-95 duration-500 relative z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+        <Card className="w-full max-w-lg overflow-hidden border-none shadow-2xl animate-in zoom-in-95 duration-500 relative z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl">
           <div className="h-2 bg-green-500" />
           <CardContent className="pt-12 pb-10 px-8 text-center space-y-6">
             <div className="mx-auto w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center animate-bounce">
               <CheckCircle2 className="h-14 w-14 text-green-600 dark:text-green-400" />
             </div>
-            <div className="space-y-3">
+            
+            <div className="space-y-4">
               <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Success!</h2>
-              <p className="text-2xl font-medium text-green-700 dark:text-green-400">Welcome to NEU Library!</p>
-              <p className="text-slate-600 dark:text-slate-400">Your visit has been logged. Happy studying!</p>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-primary font-headline tracking-tight">Welcome, {profile?.displayName}!</p>
+                <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  <span>{currentCollegeName}</span>
+                  <span className="text-primary/70">{program}</span>
+                </div>
+              </div>
+              <p className="text-slate-500 dark:text-slate-500 text-sm">Your visit has been logged. Happy studying!</p>
             </div>
-            <div className="pt-6">
+
+            <div className="space-y-4 pt-6">
+              <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <Clock className="h-3 w-3 animate-pulse" />
+                Returning to login in {countdown}s
+              </div>
               <Button 
-                variant="outline" 
+                variant="default" 
                 size="lg" 
-                className="w-full rounded-xl border-slate-200 dark:border-slate-800"
-                onClick={() => {
-                  setSubmitted(false);
-                  setPurpose("");
-                  setOtherPurpose("");
-                  setCollegeId("");
-                  setOtherCollegeName("");
-                }}
+                className="w-full rounded-xl shadow-lg hover:shadow-primary/20 transition-all font-bold text-lg"
+                onClick={() => router.push('/')}
               >
-                Log another visit
+                Done
               </Button>
             </div>
           </CardContent>
@@ -264,13 +288,13 @@ export default function CheckInPage(props: PageProps) {
                     )}
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="college" className="text-xs font-bold uppercase tracking-wider text-slate-400">College</Label>
+                      <Label htmlFor="college" className="text-xs font-bold uppercase tracking-wider text-slate-400">College / Department</Label>
                       <div className="relative">
                         <Select value={collegeId} onValueChange={setCollegeId} required>
                           <SelectTrigger id="college" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl">
-                            <SelectValue placeholder="Select your college" />
+                            <SelectValue placeholder="Select college" />
                           </SelectTrigger>
                           <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
                             {colleges.map(c => (
@@ -283,28 +307,43 @@ export default function CheckInPage(props: PageProps) {
                       </div>
                     </div>
 
-                    {collegeId === "others" && (
-                      <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                        <Label htmlFor="otherCollege" className="text-xs font-bold uppercase tracking-wider text-slate-400">Specify College Name</Label>
-                        <div className="relative">
-                          <Input 
-                            id="otherCollege"
-                            placeholder="Type your college name here..."
-                            className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
-                            value={otherCollegeName}
-                            onChange={(e) => setOtherCollegeName(e.target.value)}
-                            required
-                          />
-                          <Pencil className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
-                        </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="program" className="text-xs font-bold uppercase tracking-wider text-slate-400">Program / Course</Label>
+                      <div className="relative">
+                        <Input 
+                          id="program"
+                          placeholder="e.g. BSCS, BSN, BSA"
+                          className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
+                          value={program}
+                          onChange={(e) => setProgram(e.target.value)}
+                          required
+                        />
+                        <GraduationCap className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
                       </div>
-                    )}
+                    </div>
                   </div>
+
+                  {collegeId === "others" && (
+                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                      <Label htmlFor="otherCollege" className="text-xs font-bold uppercase tracking-wider text-slate-400">Specify College Name</Label>
+                      <div className="relative">
+                        <Input 
+                          id="otherCollege"
+                          placeholder="Type your college name here..."
+                          className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
+                          value={otherCollegeName}
+                          onChange={(e) => setOtherCollegeName(e.target.value)}
+                          required
+                        />
+                        <Pencil className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+                  )}
 
                   <Button 
                     type="submit" 
                     className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-primary/20 transition-all rounded-xl active:scale-95" 
-                    disabled={loading || !purpose || !collegeId || (collegeId === "others" && !otherCollegeName.trim()) || (purpose === "Others" && !otherPurpose.trim())}
+                    disabled={loading || !purpose || !collegeId || !program || (collegeId === "others" && !otherCollegeName.trim()) || (purpose === "Others" && !otherPurpose.trim())}
                   >
                     {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Complete Check-in"}
                   </Button>
