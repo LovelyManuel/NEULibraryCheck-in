@@ -249,10 +249,11 @@ export default function AdminDashboard(props: PageProps) {
     doc.text("5. Historical Entry Registry", 14, registryStartY);
     autoTable(doc, {
       startY: registryStartY + 3,
-      head: [['Visitor Name', 'Department', 'Purpose', 'Date', 'Time']],
+      head: [['Visitor Name', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
       body: visits.slice().reverse().map(v => [
         v.userName || "Unknown",
         v.collegeName || "Unknown",
+        v.program || "N/A",
         v.purposeOfVisit,
         v.timestamp.toDate().toLocaleDateString(),
         v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -653,6 +654,7 @@ export default function AdminDashboard(props: PageProps) {
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                       <th className="py-4 px-6">Visitor</th>
                       <th className="py-4 px-6">College</th>
+                      <th className="py-4 px-6">Program</th>
                       <th className="py-4 px-6">Purpose</th>
                       <th className="py-4 px-6 text-right">Time</th>
                     </tr>
@@ -670,6 +672,9 @@ export default function AdminDashboard(props: PageProps) {
                         </td>
                         <td className="py-4 px-6 text-[11px] text-slate-500 dark:text-slate-400">
                           {visit.collegeName}
+                        </td>
+                        <td className="py-4 px-6 text-[11px] text-slate-500 dark:text-slate-400">
+                          {visit.program || "N/A"}
                         </td>
                         <td className="py-4 px-6">
                           <span className="text-[9px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full border border-primary/10">

@@ -21,6 +21,7 @@ export interface LibraryVisit {
   purposeOfVisit: string;
   collegeId: string;
   collegeName: string;
+  program?: string;
 }
 
 export interface College {

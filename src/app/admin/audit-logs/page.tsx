@@ -56,6 +56,7 @@ export default function AuditLogsPage(props: PageProps) {
       v.userName?.toLowerCase().includes(term) ||
       v.purposeOfVisit?.toLowerCase().includes(term) ||
       v.collegeName?.toLowerCase().includes(term) ||
+      v.program?.toLowerCase().includes(term) ||
       v.id?.toLowerCase().includes(term) ||
       v.userId?.toLowerCase().includes(term)
     );
@@ -73,10 +74,11 @@ export default function AuditLogsPage(props: PageProps) {
     
     autoTable(doc, {
       startY: 35,
-      head: [['Visitor', 'College', 'Purpose', 'Date', 'Time', 'Reference']],
+      head: [['Visitor', 'College', 'Program', 'Purpose', 'Date', 'Time', 'Reference']],
       body: filteredVisits.map(v => [
         v.userName || "Unknown",
         v.collegeName || "Unknown",
+        v.program || "N/A",
         v.purposeOfVisit,
         v.timestamp.toDate().toLocaleDateString(),
         v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -181,7 +183,7 @@ export default function AuditLogsPage(props: PageProps) {
               <div className="relative max-w-md w-full">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                 <Input 
-                  placeholder="Search name, college, or reference..." 
+                  placeholder="Search name, college, or program..." 
                   className="pl-10 h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-primary rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -195,6 +197,7 @@ export default function AuditLogsPage(props: PageProps) {
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
                       <th className="py-5 px-6">Visitor</th>
                       <th className="py-5 px-6 hidden sm:table-cell">College</th>
+                      <th className="py-5 px-6 hidden md:table-cell">Program</th>
                       <th className="py-5 px-6">Purpose</th>
                       <th className="py-5 px-6">Timestamp</th>
                       <th className="py-5 px-6 text-right">Reference</th>
@@ -215,6 +218,9 @@ export default function AuditLogsPage(props: PageProps) {
                         </td>
                         <td className="py-5 px-6 text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium hidden sm:table-cell">
                           {visit.collegeName}
+                        </td>
+                        <td className="py-5 px-6 text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium hidden md:table-cell">
+                          {visit.program || "N/A"}
                         </td>
                         <td className="py-5 px-6">
                           <span className="text-[9px] lg:text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
