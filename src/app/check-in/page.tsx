@@ -204,7 +204,7 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
                 <p className="text-2xl font-bold text-primary tracking-tight font-headline">
                   Welcome to NEU library, {getGreetingName()}!
                 </p>
-                <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium">
+                <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium text-wrap">
                   <span>{currentCollegeName}</span>
                   <span className="text-primary/70">{program}</span>
                 </div>
@@ -260,7 +260,7 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
                 data-ai-hint="university logo"
               />
             </div>
-            <h1 className="font-bold text-xl hidden sm:block text-slate-900 dark:text-white">NEU Library</h1>
+            <h1 className="font-bold text-xl text-slate-900 dark:text-white">NEU Library</h1>
           </div>
           <div className="flex items-center gap-4">
             {profile?.role === 'admin' && (
