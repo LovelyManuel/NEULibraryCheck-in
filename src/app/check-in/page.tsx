@@ -136,6 +136,15 @@ export default function CheckInPage(props: PageProps) {
   const currentCollegeName = colleges.find(c => c.id === collegeId)?.name || "Unassigned";
   const availablePrograms = COLLEGE_PROGRAMS[collegeId] || [];
 
+  const getGreetingName = () => {
+    const fullName = profile?.displayName || user?.displayName || "";
+    const parts = fullName.split(" ");
+    if (parts.length >= 2) {
+      return `${parts[0]} ${parts[1]}`;
+    }
+    return parts[0] || "Student";
+  };
+
   if (submitted) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden transition-colors duration-300">
@@ -162,7 +171,9 @@ export default function CheckInPage(props: PageProps) {
             <div className="space-y-4">
               <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-headline">Success!</h2>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-primary tracking-tight font-headline">Welcome, {profile?.displayName || user?.displayName}!</p>
+                <p className="text-2xl font-bold text-primary tracking-tight font-headline">
+                  Welcome to NEU library, {getGreetingName()}!
+                </p>
                 <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium">
                   <span>{currentCollegeName}</span>
                   <span className="text-primary/70">{program}</span>
