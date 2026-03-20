@@ -31,10 +31,11 @@ export interface College {
 
 export const VISIT_PURPOSES = [
   "Study",
+  "Assignment",
   "Research",
   "Book Return",
   "Book Borrowing",
-  "Clearance",
+  "Relaxing",
   "Internet Usage"
 ];
 
