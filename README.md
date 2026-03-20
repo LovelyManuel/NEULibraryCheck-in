@@ -4,7 +4,7 @@
 **[GitHub Repository](https://github.com/LovelyManuel/NEULibraryCheck-in.git) - GitHub**
 
 ## Live Demo
-**[Deployed Application](https://discordapp.com/channels/1466350654413996158/1466350655223500948/1484567902026989742) - Application**
+**[Deployed Application](https://lovelymanuelneu-library-check-in.vercel.app/) - Application**
 
 ## Preview
 
