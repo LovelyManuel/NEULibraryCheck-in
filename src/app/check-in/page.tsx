@@ -74,7 +74,7 @@ export default function CheckInPage(props: PageProps) {
   const router = useRouter();
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
-  const logoImage = placeholderData.placeholderImages.find(img => img.id === 'neu-logo')?.imageUrl || 'https://neu.edu.ph/main/img/neu.png';
+  const logoImage = 'https://neu.edu.ph/main/img/neu.png';
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -187,9 +187,9 @@ export default function CheckInPage(props: PageProps) {
             </div>
             
             <div className="space-y-4">
-              <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Success!</h2>
+              <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-headline">Success!</h2>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-primary font-headline tracking-tight">Welcome, {profile?.displayName || user?.displayName}!</p>
+                <p className="text-2xl font-bold text-primary tracking-tight">Welcome, {profile?.displayName || user?.displayName}!</p>
                 <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium">
                   <span>{currentCollegeName}</span>
                   <span className="text-primary/70">{program}</span>
@@ -349,10 +349,10 @@ export default function CheckInPage(props: PageProps) {
                     <div className="space-y-2">
                       <Label htmlFor="program" className="text-xs font-bold uppercase tracking-wider text-slate-400">Program / Course</Label>
                       <div className="relative">
-                        {collegeId && collegeId !== "others" && availablePrograms.length > 0 ? (
-                          <Select value={program} onValueChange={setProgram} required>
+                        {collegeId !== "others" ? (
+                          <Select value={program} onValueChange={setProgram} disabled={!collegeId} required>
                             <SelectTrigger id="program" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl text-left">
-                              <SelectValue placeholder="Select program" />
+                              <SelectValue placeholder={!collegeId ? "Select college first" : "Select program"} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
                               {availablePrograms.map(p => (
@@ -363,7 +363,7 @@ export default function CheckInPage(props: PageProps) {
                         ) : (
                           <Input 
                             id="program"
-                            placeholder={collegeId === "others" ? "Enter your course" : "e.g. BSCS, BSN, BSA"}
+                            placeholder="Enter your course"
                             className="h-12 pl-10 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:border-primary rounded-xl"
                             value={program}
                             onChange={(e) => setProgram(e.target.value)}
