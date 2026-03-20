@@ -1,0 +1,176 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Stores user profile information for the NEU Library Check-in app, including authentication details, role, and blockage status.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity (Firebase Authentication UID)."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's institutional email address, strictly restricted to @neu.edu.ph domain.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User's full name or preferred display name."
+        },
+        "role": {
+          "type": "string",
+          "description": "User's role in the system. Accepted values are 'admin' or 'user'."
+        },
+        "collegeId": {
+          "type": "string",
+          "description": "Reference to the College entity the user belongs to. (Relationship: College 1:N User)"
+        },
+        "isBlocked": {
+          "type": "boolean",
+          "description": "Indicates if the user is blocked from accessing the application. True means access is denied."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName",
+        "role",
+        "collegeId",
+        "isBlocked"
+      ]
+    },
+    "Visit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Visit",
+      "type": "object",
+      "description": "Records individual entry logs for library visitors, including who visited, when, and their purpose.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Visit entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User entity who made the visit. (Relationship: User 1:N Visit)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp when the visit was recorded.",
+          "format": "date-time"
+        },
+        "purposeOfVisit": {
+          "type": "string",
+          "description": "The specific reason for the user's visit to the library."
+        },
+        "collegeId": {
+          "type": "string",
+          "description": "Reference to the College entity the visitor belongs to at the time of visit. (Relationship: College 1:N Visit)"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "timestamp",
+        "purposeOfVisit",
+        "collegeId"
+      ]
+    },
+    "College": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "College",
+      "type": "object",
+      "description": "Maintains a list of valid colleges, used for dropdown menus and filtering purposes.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the College entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The official name of the college."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores individual user profiles. The document ID `{userId}` is the Firebase Authentication UID. Includes denormalized 'role' and 'isBlocked' fields for user-specific data and admin management.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique Firebase Authentication UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/visits/{visitId}",
+        "definition": {
+          "entityName": "Visit",
+          "schema": {
+            "$ref": "#/backend/entities/Visit"
+          },
+          "description": "Records individual library entry logs. Includes denormalized 'userId' for authorization independence (allowing users to create their own logs without 'get()' calls) and 'collegeId' for admin analytics.",
+          "params": [
+            {
+              "name": "visitId",
+              "description": "The unique identifier for the visit log."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/colleges/{collegeId}",
+        "definition": {
+          "entityName": "College",
+          "schema": {
+            "$ref": "#/backend/entities/College"
+          },
+          "description": "Master list of valid colleges. Accessible for read by all authenticated users for dropdown menus. Only admins can manage this collection.",
+          "params": [
+            {
+              "name": "collegeId",
+              "description": "The unique identifier for the college."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Dedicated collection for explicit admin role-based access control. The document ID `{userId}` marks a user as an administrator. Used for robust, authorization-independent permission checks (e.g., via 'exists()' in rules).",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique Firebase Authentication UID of the admin user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed with a strong emphasis on Authorization Independence and Query-Aware Security Rules (QAPs), ensuring clarity, scalability, and debuggability. \n\n1.  **Users Collection (`/users/{userId}`):** This top-level collection stores individual user profiles. The `userId` matches the Firebase Authentication UID, establishing clear path-based ownership. Each user document contains `role` (admin/user) and `isBlocked` status directly. \n    *   **Authorization Independence:** While `role` and `isBlocked` are crucial for authorization, they reside within the user's own document, which is the primary data source. For global admin checks, an additional `/roles_admin/{userId}` collection is introduced. This separates the explicit `admin` role definition for rules from the `role` field within the user's profile which might be used for UI or other application logic, eliminating `get()` calls to a user's profile for admin status checks in rules. Users can read/update their own profile, while admins can read all profiles and manage `isBlocked` status. \n    *   **QAPs:** Admins can efficiently `list` all users for management and search without needing client-side filtering, as all documents within `/users` share the same read/write permissions for admins. Users can only `get` their own specific document, which is a QAP-friendly operation. \n\n2.  **Visits Collection (`/visits/{visitId}`):** This collection stores all library visit logs. Each `Visit` document includes `userId` and `collegeId` directly within its own fields. \n    *   **Authorization Independence:** The `userId` field is denormalized into every `Visit` document. This is critical for authorization independence, allowing security rules to verify `request.auth.uid == request.resource.data.userId` for creation without any `get()` operations. This makes rule evaluation atomic and straightforward. `collegeId` is also denormalized to facilitate admin analytics and grouping without cross-collection lookups in rules. \n    *   **QAPs:** Regular users are only permitted to *create* their own visit logs; they cannot `list` other visits or even their own from this collection, as per the strict requirement \"Users can only create their own visit logs.\" Admins, however, are explicitly allowed to `list` all visits. Because all documents in `/visits` have the same security posture for admin reads, admins can perform efficient collection-group queries or direct `list` operations across all visits for analytics without rule violations. \n\n3.  **Colleges Collection (`/colleges/{collegeId}`):** This collection serves as a master list of colleges. \n    *   **Authorization Independence:** This collection does not rely on parent data for authorization. Its access is defined independently. \n    *   **QAPs:** All authenticated users are permitted to `list` all `College` documents for dropdown menus. This is highly QAP-friendly as all documents have uniform read permissions for authenticated users, allowing efficient retrieval of the entire list. Only admins can modify this collection.\n\n4.  **Admin Roles Collection (`/roles_admin/{userId}`):** This is a dedicated collection to explicitly mark admin users. \n    *   **Authorization Independence:** This collection is the cornerstone for DBAC. A simple `exists()` check against `/roles_admin/$(request.auth.uid)` determines if the requesting user is an admin. This completely decouples admin role verification from the main `/users` collection, preventing `get()` calls and ensuring atomic rule evaluation and simplified debugging. The documents here are simple markers, potentially just containing the `userId` as the document ID.\n    *   **QAPs:** Rules check for the *existence* of a document, not its content or a list. This supports highly efficient authorization checks without requiring `list` operations."
+  }
+}

@@ -1,0 +1,71 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * NEU Library Check-in Application Security Rules
+     */
+
+    // --- Helper Functions ---
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for the User collection.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if (isOwner(userId) && resource.data.id == request.resource.data.id) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for Visit logs.
+     */
+    match /visits/{visitId} {
+      allow get: if isOwner(resource.data.userId) || isAdmin();
+      allow list: if isAdmin() || (isSignedIn() && request.query.limit <= 10 && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Public directory of colleges.
+     */
+    match /colleges/{collegeId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Marker collection for admin roles.
+     * francesaly11@gmail.com and jcesperanza@neu.edu.ph are pre-authorized.
+     */
+    match /roles_admin/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && 
+                   (request.auth.token.email == "francesaly11@gmail.com" || 
+                    request.auth.token.email == "jcesperanza@neu.edu.ph" || 
+                    request.auth.token.email == "admin@example.com" || 
+                    isAdmin()) && 
+                   request.resource.data.uid == userId;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
