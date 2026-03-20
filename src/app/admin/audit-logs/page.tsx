@@ -196,8 +196,8 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                   <thead>
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
                       <th className="py-5 px-6">Visitor</th>
-                      <th className="py-5 px-6 hidden sm:table-cell">College</th>
-                      <th className="py-5 px-6 hidden md:table-cell">Program</th>
+                      <th className="py-5 px-6">College</th>
+                      <th className="py-5 px-6">Program</th>
                       <th className="py-5 px-6">Purpose</th>
                       <th className="py-5 px-6">Timestamp</th>
                       <th className="py-5 px-6 text-right">Reference</th>
@@ -212,23 +212,23 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                               {visit.userName?.charAt(0) || "U"}
                             </div>
                             <div>
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
+                              <p className="font-bold text-slate-900 dark:text-slate-100 text-sm whitespace-nowrap">{visit.userName || "Unknown"}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="py-5 px-6 text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium hidden sm:table-cell">
+                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
                           {visit.collegeName}
                         </td>
-                        <td className="py-5 px-6 text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium hidden md:table-cell">
+                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
                           {visit.program || "N/A"}
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[9px] lg:text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
+                          <span className="text-[9px] lg:text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10 whitespace-nowrap">
                             {visit.purposeOfVisit}
                           </span>
                         </td>
                         <td className="py-5 px-6">
-                          <div className="flex flex-col">
+                          <div className="flex flex-col whitespace-nowrap">
                             <span className="text-xs lg:text-sm font-medium text-slate-700 dark:text-slate-300">
                               {visit.timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </span>
@@ -238,7 +238,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                             </span>
                           </div>
                         </td>
-                        <td className="py-5 px-6 text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 font-medium text-right">
+                        <td className="py-5 px-6 text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 font-medium text-right font-mono">
                           {visit.id?.substring(0, 8)}
                         </td>
                       </tr>
