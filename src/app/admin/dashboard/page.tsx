@@ -482,7 +482,7 @@ export default function AdminDashboard(props: PageProps) {
                     </div>
 
                     <div className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium">
+                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 hover:text-slate-900 dark:hover:white font-medium">
                         Close
                       </Button>
                       <Button onClick={handleConfirmRange} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl shadow-lg shadow-primary/20">
