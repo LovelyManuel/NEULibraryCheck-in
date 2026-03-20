@@ -31,8 +31,8 @@ interface PageProps {
 
 export default function AuditLogsPage({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(params);
-  use(searchParams);
+  const unwrappedParams = use(params);
+  const unwrappedSearchParams = use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -191,7 +191,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full">
                   <thead>
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
@@ -212,11 +212,11 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                               {visit.userName?.charAt(0) || "U"}
                             </div>
                             <div>
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-sm whitespace-nowrap">{visit.userName || "Unknown"}</p>
+                              <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium">
                           {visit.collegeName}
                         </td>
                         <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">

@@ -4,7 +4,7 @@
 import { useState, useMemo, use } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection, query, where, orderBy, Timestamp, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, Timestamp, getDocs, limit } from "firebase/firestore";
 import { LibraryVisit } from "@/app/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ import {
   RefreshCw,
   Calendar as CalendarIcon,
   ChevronDown,
-  X
+  ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
@@ -55,6 +55,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * EXPANDED COLOR PALETTE
+ * Ensuring distinct colors for every college and purpose.
  */
 const COLORS = [
   '#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899',
@@ -70,8 +71,8 @@ interface PageProps {
 
 export default function AdminDashboard({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(params);
-  use(searchParams);
+  const unwrappedParams = use(params);
+  const unwrappedSearchParams = use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -84,7 +85,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
-  const logoImage = placeholderData.placeholderImages.find(img => img.id === 'neu-logo')?.imageUrl || 'https://neu.edu.ph/main/img/neu.png';
+  const logoImage = 'https://neu.edu.ph/main/img/neu.png';
 
   const dateFilter = useMemo(() => {
     if (range === 'custom' && customRange?.from) {
@@ -555,6 +556,70 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden mt-8">
+            <CardHeader className="pb-3 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Recent Entry Registry</CardTitle>
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                  </div>
+                  <CardDescription>Latest visitor activity logs</CardDescription>
+                </div>
+                <Link href="/admin/audit-logs">
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 font-bold gap-2 rounded-xl">
+                    View Full Logs <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto no-scrollbar">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
+                      <th className="py-5 px-6">Visitor</th>
+                      <th className="py-5 px-6">College</th>
+                      <th className="py-5 px-6">Program</th>
+                      <th className="py-5 px-6">Purpose</th>
+                      <th className="py-5 px-6 text-right">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {visits.slice().reverse().slice(0, 10).map((visit) => (
+                      <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-5 px-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary font-bold border border-slate-200 dark:border-slate-700">
+                              {visit.userName?.charAt(0) || "U"}
+                            </div>
+                            <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
+                          </div>
+                        </td>
+                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                          {visit.collegeName}
+                        </td>
+                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                          {visit.program || "N/A"}
+                        </td>
+                        <td className="py-5 px-6">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10 whitespace-nowrap">
+                            {visit.purposeOfVisit}
+                          </span>
+                        </td>
+                        <td className="py-5 px-6 text-right">
+                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                            {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
