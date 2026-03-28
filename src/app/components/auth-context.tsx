@@ -25,10 +25,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-/**
- * MASTER ADMINISTRATIVE LOGIC
- * These emails are pre-authorized to bypass standard user roles.
- */
 const ADMIN_EMAILS = [
   'francesaly11@gmail.com',
   'jcesperanza@neu.edu.ph',
@@ -51,6 +47,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       try {
         if (firebaseUser) {
+          const isMasterAdmin = isAdminEmail(firebaseUser.email || '');
+          const isStudent = isStudentEmail(firebaseUser.email || '');
+
+          if (!isMasterAdmin && !isStudent) {
+            await signOut(auth);
+            toast({
+              variant: 'destructive',
+              title: 'Access Denied',
+              description: 'Access is restricted to @neu.edu.ph institutional accounts.',
+            });
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+            return;
+          }
+
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           const userDoc = await getDoc(userDocRef);
 
@@ -59,28 +71,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (userDoc.exists()) {
             profileData = userDoc.data() as LibraryUser;
           } else {
-            // New Account / Profile Healing
-            const isMasterAdmin = isAdminEmail(firebaseUser.email || '');
-
-            // Validate student email if not the master admin
-            if (!isMasterAdmin && !isStudentEmail(firebaseUser.email || '')) {
-              await signOut(auth);
-              toast({
-                variant: 'destructive',
-                title: 'Access Denied',
-                description: 'Students must use their @neu.edu.ph institutional email.',
-              });
-              setUser(null);
-              setProfile(null);
-              return;
-            }
-
             const newUser: LibraryUser = {
               id: firebaseUser.uid,
               email: firebaseUser.email || '',
               displayName: firebaseUser.displayName || (isMasterAdmin ? 'Administrator' : 'Student'),
               role: isMasterAdmin ? 'admin' : 'user',
               collegeId: 'Unassigned',
+              visitorType: 'Unassigned',
               isBlocked: false,
               createdAt: Timestamp.now(),
             };
@@ -89,11 +86,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             profileData = newUser;
           }
 
-          /**
-           * ADMIN CODE INSERTION LOGIC
-           * If the user is identified as an admin, we insert the 'admin code' 
-           * (marker document) into the roles_admin collection to satisfy Security Rules.
-           */
           if (profileData.role === 'admin') {
             const adminMarkerRef = doc(firestore, 'roles_admin', firebaseUser.uid);
             const adminMarker = await getDoc(adminMarkerRef);
@@ -115,6 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
             setUser(null);
             setProfile(null);
+            setLoading(false);
             return;
           }
 
@@ -142,12 +135,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const result = await signInWithPopup(auth, provider);
       const email = result.user.email || '';
 
-      if (portal === 'student' && !isStudentEmail(email)) {
+      const isMasterAdmin = isAdminEmail(email);
+      const isStudent = isStudentEmail(email);
+
+      if (portal === 'student' && !isStudent) {
         await signOut(auth);
-        throw new Error('Students must use an @neu.edu.ph account.');
+        throw new Error('Students must use their @neu.edu.ph institutional account.');
       }
 
-      if (portal === 'admin' && !isAdminEmail(email)) {
+      if (portal === 'admin' && !isMasterAdmin) {
         const userDoc = await getDoc(doc(firestore, 'users', result.user.uid));
         if (!userDoc.exists() || userDoc.data()?.role !== 'admin') {
           await signOut(auth);

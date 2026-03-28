@@ -30,7 +30,7 @@
         },
         "visitorType": {
           "type": "string",
-          "description": "Whether the user is a 'Student' or 'Employee (Faculty/Staff)'.",
+          "description": "Classification of the visitor. Accepted values are 'Student' or 'Employee (Faculty/Staff)'.",
           "enum": ["Student", "Employee (Faculty/Staff)"]
         },
         "isBlocked": {
@@ -44,6 +44,7 @@
         "displayName",
         "role",
         "collegeId",
+        "visitorType",
         "isBlocked"
       ]
     },
@@ -76,7 +77,7 @@
         },
         "visitorType": {
           "type": "string",
-          "description": "The type of visitor recorded at the time of visit (Student or Employee)."
+          "description": "Classification of the visitor at the time of visit."
         }
       },
       "required": [
@@ -84,7 +85,8 @@
         "userId",
         "timestamp",
         "purposeOfVisit",
-        "collegeId"
+        "collegeId",
+        "visitorType"
       ]
     },
     "College": {
@@ -111,7 +113,7 @@
   "auth": {
     "providers": [
       "password",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -180,6 +182,7 @@
           ]
         }
       }
-    ]
+    ],
+    "reasoning": "The Firestore data structure is designed with a strong emphasis on Authorization Independence and Query-Aware Security Rules (QAPs). Denormalizing visitorType into visits facilitates high-performance analytics on the dashboard."
   }
 }

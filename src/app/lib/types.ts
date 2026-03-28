@@ -2,6 +2,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export type UserRole = 'admin' | 'user';
+export type VisitorType = 'Student' | 'Employee (Faculty/Staff)';
 
 export interface LibraryUser {
   id: string;
@@ -9,8 +10,8 @@ export interface LibraryUser {
   displayName: string;
   role: UserRole;
   collegeId: string;
+  visitorType: VisitorType | 'Unassigned';
   isBlocked: boolean;
-  visitorType?: string;
   createdAt: Timestamp;
 }
 
@@ -23,7 +24,7 @@ export interface LibraryVisit {
   collegeId: string;
   collegeName: string;
   program?: string;
-  visitorType?: string;
+  visitorType: VisitorType | 'Unassigned';
 }
 
 export interface College {
@@ -42,7 +43,7 @@ export const VISIT_PURPOSES = [
   "Assignment"
 ];
 
-export const VISITOR_TYPES = [
+export const VISITOR_TYPES: VisitorType[] = [
   "Student",
   "Employee (Faculty/Staff)"
 ];

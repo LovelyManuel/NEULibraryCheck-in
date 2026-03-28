@@ -4,7 +4,7 @@
 import { useState, useMemo, use } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection, query, where, orderBy, Timestamp, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, Timestamp, getDocs, limit } from "firebase/firestore";
 import { LibraryVisit } from "@/app/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,8 @@ import {
   RefreshCw,
   Calendar as CalendarIcon,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  UserCircle
 } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
@@ -60,13 +61,76 @@ const COLORS = [
   '#DB2777', '#7C3AED'
 ];
 
+const CustomYAxisTick = (props: any) => {
+  const { x, y, payload } = props;
+  const words = payload.value.split(' ');
+  const lines: string[] = [];
+  
+  if (words.length > 3) {
+    lines.push(words.slice(0, 2).join(' '));
+    lines.push(words.slice(2, 4).join(' '));
+    lines.push(words.slice(4).join(' '));
+  } else if (words.length > 2) {
+    lines.push(words.slice(0, 2).join(' '));
+    lines.push(words.slice(2).join(' '));
+  } else {
+    lines.push(payload.value);
+  }
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {lines.map((line, index) => (
+        <text
+          key={index}
+          x={-12}
+          y={index * 11 - (lines.length - 1) * 5.5}
+          textAnchor="end"
+          fill="currentColor"
+          className="fill-slate-400 dark:fill-slate-500 text-[9px] font-bold"
+        >
+          {line}
+        </text>
+      ))}
+    </g>
+  );
+};
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#111421] text-white px-4 py-2 rounded-lg text-[10px] font-bold shadow-2xl border border-white/10 uppercase tracking-widest whitespace-nowrap">
+        {payload[0].payload.name}: {payload[0].value}
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomPieLegend = (props: any) => {
+  const { payload } = props;
+  return (
+    <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-8 max-w-sm mx-auto">
+      {payload.map((entry: any, index: number) => (
+        <div key={`item-${index}`} className="flex items-center gap-2">
+          <div 
+            className="w-3.5 h-3.5 rounded-full" 
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+            {entry.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 interface PageProps {
   params: Promise<any>;
   searchParams: Promise<any>;
 }
 
 export default function AdminDashboard({ params, searchParams }: PageProps) {
-  // Unwrap Next.js 15 dynamic APIs
   use(params);
   use(searchParams);
 
@@ -76,7 +140,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
   const [range, setRange] = useState<'today' | 'week' | 'month' | 'custom'>('today');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [pendingRange, setPendingRange] = useState<DateRange | undefined>();
-  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -183,10 +246,13 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
   }, [visits]);
 
   const statsByVisitorType = useMemo(() => {
-    const counts: Record<string, number> = {};
+    const counts: Record<string, number> = { "Student": 0, "Employee (Faculty/Staff)": 0 };
     visits.forEach(v => {
-      const type = v.visitorType || "Student"; // Default to Student for older records
-      counts[type] = (counts[type] || 0) + 1;
+      if (v.visitorType) {
+        counts[v.visitorType] = (counts[v.visitorType] || 0) + 1;
+      } else {
+        counts["Student"] = (counts["Student"] || 0) + 1;
+      }
     });
     return Object.entries(counts)
       .map(([name, count]) => ({ name, count }))
@@ -196,16 +262,13 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
   const handleExportPDF = () => {
     const doc = new jsPDF();
     const uniqueVisitors = new Set(visits.map(v => v.userId)).size;
-
     doc.setFontSize(22);
     doc.setTextColor(51, 107, 204);
     doc.text("NEU Library Comprehensive Report", 14, 20);
-    
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Report Period: ${range.toUpperCase()}`, 14, 28);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
-
     doc.setFontSize(14);
     doc.setTextColor(51, 107, 204);
     doc.text("1. Core Strategic Metrics", 14, 45);
@@ -221,7 +284,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       headStyles: { fillColor: [51, 107, 204] },
       styles: { cellPadding: 3 }
     });
-
     const breakdownStartY = (doc as any).lastAutoTable.finalY + 12;
     doc.setFontSize(14);
     doc.setTextColor(41, 196, 224);
@@ -233,7 +295,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       headStyles: { fillColor: [41, 196, 224] },
       styles: { cellPadding: 3 }
     });
-
     doc.save(`NEU_Library_Full_Report_${range}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
@@ -242,10 +303,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       setCustomRange(pendingRange);
       setIsPopoverOpen(false);
     }
-  };
-
-  const handleResetRange = () => {
-    setPendingRange(undefined);
   };
 
   if (authLoading || (visitsLoading && visits.length === 0)) {
@@ -319,7 +376,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <Activity className="h-4 w-4 text-primary animate-pulse" />
                 <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Live Monitoring Pulse</span>
               </div>
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline italic">Overview</h1>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Overview</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">Strategic analysis of library attendance.</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
@@ -352,179 +409,170 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                     <TabsTrigger value="custom" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Custom</TabsTrigger>
                   </TabsList>
                 </Tabs>
+                
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className={cn("h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm", range !== 'custom' && "hidden")}>
+                      <CalendarIcon className="mr-1.5 h-3 w-3" />
+                      {customRange?.from ? format(customRange.from, "MMM dd") : "Select Range"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[360px] p-0 rounded-2xl border-none shadow-2xl bg-white dark:bg-slate-900" align="end">
+                    <div className="p-6 space-y-6">
+                      <Calendar mode="range" selected={pendingRange} onSelect={setPendingRange} numberOfMonths={1} />
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t dark:border-slate-800">
+                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)}>Close</Button>
+                      <Button onClick={handleConfirmRange} className="bg-primary text-white">Confirm</Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="border-none shadow-xl bg-primary/95 backdrop-blur-sm text-white overflow-hidden rounded-2xl relative">
-              <div className="absolute top-0 right-0 p-4 opacity-10"><Users className="h-20 w-20" /></div>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="border-none shadow-xl bg-primary text-white overflow-hidden rounded-2xl relative">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-80">Total Attendance</CardTitle>
-                <Users className="h-4 w-4 opacity-80" />
               </CardHeader>
-              <CardContent className="relative z-10">
+              <CardContent>
                 <div className="text-4xl font-bold">{visits.length}</div>
-                <p className="text-xs mt-2 opacity-70">Filtered for your selected range</p>
               </CardContent>
             </Card>
             <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Peak Department</CardTitle>
-                <Library className="h-4 w-4 text-primary/40" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold truncate text-slate-900 dark:text-slate-100">{statsByCollege[0]?.name || "N/A"}</div>
-                <p className="text-xs text-muted-foreground mt-2">Top institutional contributor</p>
               </CardContent>
             </Card>
             <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Primary Purpose</CardTitle>
-                <Clock className="h-4 w-4 text-primary/40" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{statsByPurpose[0]?.name || "N/A"}</div>
-                <p className="text-xs text-muted-foreground mt-2">Main reason for library entry</p>
+              </CardContent>
+            </Card>
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Active Group</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{statsByVisitorType[0]?.name || "N/A"}</div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
-              <CardHeader className="px-0 pt-0">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6">
+              <CardHeader className="px-0 pt-0 relative">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Attendance Trend</CardTitle>
                     <CardDescription>Temporal analysis of student visits</CardDescription>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <TrendingUp className="h-5 w-5 text-primary opacity-60" />
                 </div>
               </CardHeader>
-              <CardContent className="h-[300px] px-0 pb-0">
+              <CardContent className="h-[450px] px-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={statsByTime}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
-                    <XAxis dataKey="time" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                    <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                    <ChartTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'var(--card)', color: 'var(--card-foreground)' }} />
-                    <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} />
+                    <YAxis fontSize={10} axisLine={false} tickLine={false} />
+                    <ChartTooltip />
+                    <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={2} dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
+            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6">
               <CardHeader className="px-0 pt-0">
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Visitor Classification</CardTitle>
                 <CardDescription>Ratio of students to employees</CardDescription>
               </CardHeader>
-              <CardContent className="h-[300px] px-0 pb-0 flex flex-col items-center justify-center">
+              <CardContent className="h-[380px] px-0 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={statsByVisitorType} cx="50%" cy="45%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="count" style={{ outline: 'none' }}>
-                      {statsByVisitorType.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />)}
+                    <Pie 
+                      data={statsByVisitorType} 
+                      innerRadius={80} 
+                      outerRadius={130} 
+                      paddingAngle={4} 
+                      dataKey="count"
+                      stroke="none"
+                      style={{ outline: 'none' }}
+                    >
+                      <Cell fill="#336BCC" />
+                      <Cell fill="#10B981" />
                     </Pie>
-                    <ChartTooltip content={({ active, payload }) => active && payload && payload.length ? (
-                      <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-xl">
-                        <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].name}: {payload[0].value}</p>
-                      </div>
-                    ) : null} />
-                    <Legend verticalAlign="bottom" height={80} iconType="circle" formatter={(value) => <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">{value}</span>} />
+                    <ChartTooltip content={<CustomTooltip />} />
+                    <Legend content={<CustomPieLegend />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Departmental Analytics</CardTitle>
+                <CardDescription>Attendance by college</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[420px] px-0 mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      width={120} 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={<CustomYAxisTick />}
+                    />
+                    <ChartTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={22} style={{ outline: 'none' }}>
+                      {statsByCollege.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Primary Purpose Distribution</CardTitle>
+                <CardDescription>Reason for visits</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[450px] px-0 mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie 
+                      data={statsByPurpose} 
+                      innerRadius={80} 
+                      outerRadius={130} 
+                      paddingAngle={4} 
+                      dataKey="count"
+                      stroke="none"
+                      style={{ outline: 'none' }}
+                    >
+                      {statsByPurpose.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<CustomTooltip />} />
+                    <Legend content={<CustomPieLegend />} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
-
-          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
-            <CardHeader className="px-0 pt-0">
-              <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Departmental Analytics</CardTitle>
-              <CardDescription>Attendance by college</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[350px] px-0 pb-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
-                  <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                  <ChartTooltip cursor={false} content={({ active, payload }) => active && payload && payload.length ? (
-                    <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-2xl">
-                      <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].payload.name} count: {payload[0].value}</p>
-                    </div>
-                  ) : null} />
-                  <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
-                    {statsByCollege.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden mt-8">
-            <CardHeader className="pb-3 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Recent Entry Registry</CardTitle>
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                  </div>
-                  <CardDescription>Latest visitor activity logs</CardDescription>
-                </div>
-                <Link href="/admin/audit-logs">
-                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 font-bold gap-2 rounded-xl">
-                    View Full Logs <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto no-scrollbar">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
-                      <th className="py-5 px-6">Visitor</th>
-                      <th className="py-5 px-6">Type</th>
-                      <th className="py-5 px-6">College</th>
-                      <th className="py-5 px-6">Purpose</th>
-                      <th className="py-5 px-6 text-right">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {visits.slice().reverse().slice(0, 10).map((visit) => (
-                      <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="py-5 px-6">
-                          <div className="flex items-center gap-4">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary font-bold border border-slate-200 dark:border-slate-700">
-                              {visit.userName?.charAt(0) || "U"}
-                            </div>
-                            <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
-                          </div>
-                        </td>
-                        <td className="py-5 px-6">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
-                            {visit.visitorType || "Student"}
-                          </span>
-                        </td>
-                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                          {visit.collegeName}
-                        </td>
-                        <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10 whitespace-nowrap">
-                            {visit.purposeOfVisit}
-                          </span>
-                        </td>
-                        <td className="py-5 px-6 text-right">
-                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-                            {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>
