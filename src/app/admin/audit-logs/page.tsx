@@ -200,7 +200,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                           <p className="font-bold text-slate-900 dark:text-slate-100 text-sm font-headline">{visit.userName || "Unknown"}</p>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
                             {visit.visitorType || "Student"}
                           </span>
                         </td>
@@ -208,12 +208,12 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                           {visit.collegeName}
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
                             {visit.program || "N/A"}
                           </span>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
                             {visit.purposeOfVisit}
                           </span>
                         </td>

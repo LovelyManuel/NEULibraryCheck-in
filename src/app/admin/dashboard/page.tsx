@@ -13,19 +13,19 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip as ChartTooltip, 
-  ResponsiveContainer, 
-  Cell,
   LineChart,
   Line,
   CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
+  ResponsiveContainer,
   PieChart,
   Pie,
-  Legend
+  Cell,
+  Legend,
+  BarChart,
+  Bar
 } from "recharts";
 import { 
   Loader2, 
@@ -34,8 +34,8 @@ import {
   Calendar as CalendarIcon, 
   FileDown, 
   Menu,
-  ChevronDown,
-  TrendingUp
+  TrendingUp,
+  ChevronDown
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -92,7 +92,7 @@ const CustomYAxisTick = (props: any) => {
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#111421] text-white px-4 py-2 rounded-lg text-[10px] font-bold shadow-2xl border border-white/10 uppercase tracking-widest whitespace-nowrap">
+      <div className="bg-[#111421] text-white px-4 py-2 rounded-lg text-[10px] font-bold shadow-2xl border border-white/10 uppercase tracking-widest whitespace-nowrap font-headline">
         {payload[0].payload.name || payload[0].payload.time}: {payload[0].value}
       </div>
     );
@@ -435,32 +435,39 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       ) : "Select Range"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[320px] p-0 rounded-2xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
-                    <div className="p-4 pb-1">
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-slate-900 dark:text-white font-headline">Date Range</h2>
+                  <PopoverContent className="w-[350px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
+                    <div className="p-6 pb-2">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-headline">Date Range</h2>
                         <Button 
                           variant="ghost" 
                           size="sm" 
                           onClick={handleResetRange} 
-                          className="text-slate-400 font-bold text-[10px] hover:bg-primary/10 hover:text-primary transition-colors rounded-lg h-7 font-headline"
+                          className="text-slate-400 font-bold text-xs hover:bg-primary/10 hover:text-primary transition-colors rounded-xl h-8 font-headline"
                         >
                           Reset
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                          <p className="text-[9px] font-bold text-primary uppercase mb-0.5 font-headline">From</p>
-                          <span className="text-[11px] font-semibold text-slate-900 dark:text-slate-200 truncate block">
-                            {pendingRange?.from ? format(pendingRange.from, "MMM dd, yyyy") : "Select date"}
-                          </span>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                          <p className="text-[10px] font-bold text-primary uppercase mb-1.5 font-headline tracking-widest">FROM</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
+                              {pendingRange?.from ? format(pendingRange.from, "MMM dd") : "Select date"}
+                            </span>
+                            <ChevronDown className="h-3 w-3 text-slate-400" />
+                          </div>
                         </div>
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                          <p className="text-[9px] font-bold text-primary uppercase mb-0.5 font-headline">To</p>
-                          <span className="text-[11px] font-semibold text-slate-900 dark:text-slate-200 truncate block">
-                            {pendingRange?.to ? format(pendingRange.to, "MMM dd, yyyy") : "Select date"}
-                          </span>
+                        <span className="text-[11px] font-bold text-slate-400 font-headline">To</span>
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                          <p className="text-[10px] font-bold text-primary uppercase mb-1.5 font-headline tracking-widest">TO</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
+                              {pendingRange?.to ? format(pendingRange.to, "MMM dd") : "Select date"}
+                            </span>
+                            <ChevronDown className="h-3 w-3 text-slate-400" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -475,16 +482,16 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between p-3 border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between p-4 border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => setIsPopoverOpen(false)} 
-                        className="text-slate-500 font-bold text-xs hover:bg-primary/10 hover:text-primary transition-colors rounded-lg font-headline"
+                        className="text-slate-500 font-bold text-sm hover:bg-primary/10 hover:text-primary transition-colors rounded-xl font-headline"
                       >
                         Close
                       </Button>
-                      <Button size="sm" onClick={handleConfirmRange} className="bg-primary text-white px-5 h-8 rounded-xl font-bold text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-headline">
+                      <Button size="sm" onClick={handleConfirmRange} className="bg-primary text-white px-8 h-10 rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-headline">
                         Confirm
                       </Button>
                     </div>

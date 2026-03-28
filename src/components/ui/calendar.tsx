@@ -23,24 +23,24 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4 w-full",
-        caption: "flex justify-center items-center h-10 relative mb-4",
-        caption_label: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100",
-        nav: "flex items-center absolute left-0 right-0 justify-between px-1",
+        caption: "flex justify-center items-center h-10 relative mb-4 px-10",
+        caption_label: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline",
+        nav: "flex items-center absolute left-0 right-0 justify-between px-4 h-10 pointer-events-none",
         button_previous: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 bg-transparent p-0 text-slate-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-all z-20 cursor-pointer rounded-xl"
+          "h-8 w-8 bg-transparent p-0 text-slate-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-all z-20 cursor-pointer rounded-xl pointer-events-auto"
         ),
         button_next: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 bg-transparent p-0 text-slate-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-all z-20 cursor-pointer rounded-xl"
+          "h-8 w-8 bg-transparent p-0 text-slate-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-all z-20 cursor-pointer rounded-xl pointer-events-auto"
         ),
         month_grid: "w-full border-collapse",
         weekdays: "flex w-full justify-center mb-6",
-        weekday: "text-slate-400 dark:text-slate-500 rounded-md w-9 font-bold text-[11px] uppercase tracking-widest text-center",
+        weekday: "text-slate-400 dark:text-slate-500 rounded-md w-9 font-bold text-[10px] uppercase tracking-widest text-center font-headline",
         week: "flex w-full mt-1 justify-center",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-10 w-10 p-0 font-medium rounded-xl transition-all flex items-center justify-center mx-auto aria-selected:opacity-100"
+          "h-10 w-10 p-0 font-medium rounded-xl transition-all flex items-center justify-center mx-auto aria-selected:opacity-100 font-headline text-sm"
         ),
         range_start: "day-range-start rounded-r-none bg-primary/10 text-primary border-2 border-primary",
         range_end: "day-range-end rounded-l-none bg-primary/10 text-primary border-2 border-primary",
