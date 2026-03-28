@@ -35,7 +35,11 @@ import {
   FileDown, 
   Menu,
   TrendingUp,
-  ChevronDown
+  ChevronDown,
+  Users,
+  Library,
+  Clock,
+  GraduationCap
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -586,37 +590,62 @@ export default function AdminDashboard(props: PageProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border-none shadow-xl bg-primary text-white overflow-hidden rounded-2xl relative">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-80 font-headline">Total Attendance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold font-headline">{visits.length}</div>
-              </CardContent>
+            <Card className="border-none shadow-xl bg-primary text-white overflow-hidden rounded-[2rem] relative p-6 h-full flex flex-col min-h-[140px] group transition-all hover:scale-[1.02]">
+              <div className="absolute top-6 right-6 z-20 text-white/90">
+                <Users className="h-5 w-5" />
+              </div>
+              
+              <div className="absolute -right-10 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <Users className="h-56 w-56 text-white" />
+              </div>
+
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/90 mb-3 font-headline">Total Attendance</h3>
+                  <div className="text-4xl font-bold font-headline tracking-tighter">{visits.length}</div>
+                </div>
+                
+                <p className="text-sm font-medium text-white/60 font-headline mt-auto">Filtered for your selected range</p>
+              </div>
             </Card>
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 font-headline">Peak Department</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 font-headline">{statsByCollege[0]?.name || "N/A"}</div>
-              </CardContent>
+
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+              <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
+                <Library className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-3 font-headline">Peak Department</h3>
+                  <div className="text-2xl font-bold font-headline tracking-tight text-slate-900 dark:text-slate-100">{statsByCollege[0]?.name || "N/A"}</div>
+                </div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 font-headline mt-auto">Top institutional contributor</p>
+              </div>
             </Card>
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 font-headline">Primary Purpose</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 font-headline">{statsByPurpose[0]?.name || "N/A"}</div>
-              </CardContent>
+
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+              <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
+                <Clock className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-3 font-headline">Primary Purpose</h3>
+                  <div className="text-2xl font-bold font-headline tracking-tight text-slate-900 dark:text-slate-100">{statsByPurpose[0]?.name || "N/A"}</div>
+                </div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 font-headline mt-auto">Main reason for library entry</p>
+              </div>
             </Card>
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 font-headline">Active Group</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 font-headline">{statsByVisitorType[0]?.name || "N/A"}</div>
-              </CardContent>
+
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+              <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-3 font-headline">Active Group</h3>
+                  <div className="text-2xl font-bold font-headline tracking-tight text-slate-900 dark:text-slate-100">{statsByVisitorType[0]?.name || "N/A"}</div>
+                </div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 font-headline mt-auto">Most frequent visitor type</p>
+              </div>
             </Card>
           </div>
 

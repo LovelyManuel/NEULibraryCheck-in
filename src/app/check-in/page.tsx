@@ -17,7 +17,7 @@ import placeholderData from "@/app/lib/placeholder-images.json";
 import { ThemeToggle } from "../admin/components/theme-toggle";
 
 const COLLEGE_PROGRAMS: Record<string, string[]> = {
-  "LIBRARY": ["Staff / Faculty"],
+  "LIBRARY": ["Faculty / Staff"],
   "ABM": ["BS Accountancy"],
   "CAS": [
     "AB Communication", 
