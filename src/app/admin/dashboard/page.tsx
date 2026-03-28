@@ -423,9 +423,9 @@ export default function AdminDashboard(props: PageProps) {
           </div>
           <div className="flex items-center gap-2">
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="icon" 
-              className="h-9 w-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
+              className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary shadow-sm"
               onClick={handleReload}
               title="Reload"
             >
@@ -434,8 +434,12 @@ export default function AdminDashboard(props: PageProps) {
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary transition-all rounded-xl">
-                  <Menu className="h-6 w-6" />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary shadow-sm"
+                >
+                  <Menu className="h-5 w-5 text-primary" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-72">
@@ -462,7 +466,7 @@ export default function AdminDashboard(props: PageProps) {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 transition-all hover:bg-primary/10 hover:text-primary"
+                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary shadow-sm"
                 onClick={handleReload}
                 title="Reload"
               >
