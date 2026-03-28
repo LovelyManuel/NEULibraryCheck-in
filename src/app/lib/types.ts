@@ -9,8 +9,8 @@ export interface LibraryUser {
   email: string;
   displayName: string;
   role: UserRole;
+  visitorType?: VisitorType;
   collegeId: string;
-  visitorType: VisitorType | 'Unassigned';
   isBlocked: boolean;
   createdAt: Timestamp;
 }
@@ -19,12 +19,12 @@ export interface LibraryVisit {
   id?: string;
   userId: string;
   userName: string;
+  visitorType: VisitorType;
   timestamp: Timestamp;
   purposeOfVisit: string;
   collegeId: string;
   collegeName: string;
   program?: string;
-  visitorType: VisitorType | 'Unassigned';
 }
 
 export interface College {

@@ -5,7 +5,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Stores user profile information for the NEU Library Check-in app, including authentication details, role, and blockage status.",
+      "description": "Stores user profile information for the NEU Library Check-in app, including authentication details, role, and visitor classification.",
       "properties": {
         "id": {
           "type": "string",
@@ -24,14 +24,14 @@
           "type": "string",
           "description": "User's role in the system. Accepted values are 'admin' or 'user'."
         },
+        "visitorType": {
+          "type": "string",
+          "description": "Classification of the visitor. Either 'Student' or 'Employee (Faculty/Staff)'.",
+          "enum": ["Student", "Employee (Faculty/Staff)"]
+        },
         "collegeId": {
           "type": "string",
           "description": "Reference to the College entity the user belongs to. (Relationship: College 1:N User)"
-        },
-        "visitorType": {
-          "type": "string",
-          "description": "Classification of the visitor. Accepted values are 'Student' or 'Employee (Faculty/Staff)'.",
-          "enum": ["Student", "Employee (Faculty/Staff)"]
         },
         "isBlocked": {
           "type": "boolean",
@@ -44,7 +44,6 @@
         "displayName",
         "role",
         "collegeId",
-        "visitorType",
         "isBlocked"
       ]
     },
@@ -52,7 +51,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Visit",
       "type": "object",
-      "description": "Records individual entry logs for library visitors, including who visited, when, and their purpose.",
+      "description": "Records individual entry logs for library visitors, including who visited, when, their purpose, and their classification.",
       "properties": {
         "id": {
           "type": "string",
@@ -61,6 +60,10 @@
         "userId": {
           "type": "string",
           "description": "Reference to the User entity who made the visit. (Relationship: User 1:N Visit)"
+        },
+        "visitorType": {
+          "type": "string",
+          "description": "The classification of the visitor at the time of the visit."
         },
         "timestamp": {
           "type": "string",
@@ -74,19 +77,15 @@
         "collegeId": {
           "type": "string",
           "description": "Reference to the College entity the visitor belongs to at the time of visit. (Relationship: College 1:N Visit)"
-        },
-        "visitorType": {
-          "type": "string",
-          "description": "Classification of the visitor at the time of visit."
         }
       },
       "required": [
         "id",
         "userId",
+        "visitorType",
         "timestamp",
         "purposeOfVisit",
-        "collegeId",
-        "visitorType"
+        "collegeId"
       ]
     },
     "College": {
@@ -113,7 +112,7 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
@@ -183,6 +182,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore data structure is designed with a strong emphasis on Authorization Independence and Query-Aware Security Rules (QAPs). Denormalizing visitorType into visits facilitates high-performance analytics on the dashboard."
+    "reasoning": "The Firestore data structure is optimized for strategic institutional monitoring. Visitor types are denormalized for efficient dashboard analytics. Admin roles are decoupled for high-performance security rule execution."
   }
 }

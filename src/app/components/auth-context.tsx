@@ -77,7 +77,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               displayName: firebaseUser.displayName || (isMasterAdmin ? 'Administrator' : 'Student'),
               role: isMasterAdmin ? 'admin' : 'user',
               collegeId: 'Unassigned',
-              visitorType: 'Unassigned',
               isBlocked: false,
               createdAt: Timestamp.now(),
             };
