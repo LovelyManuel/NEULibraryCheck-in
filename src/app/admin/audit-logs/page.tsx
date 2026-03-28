@@ -192,7 +192,7 @@ export default function AuditLogsPage(props: PageProps) {
                 className="rounded-xl h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
               >
                 <FileDown className="h-4 w-4 text-primary" />
-                <span className="hidden sm:inline">Download PDF</span>
+                <span>Download PDF</span>
               </Button>
             </div>
           </div>

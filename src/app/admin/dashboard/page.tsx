@@ -487,7 +487,7 @@ export default function AdminDashboard(props: PageProps) {
                 onClick={handleExportPDF}
               >
                 <FileDown className="h-4 w-4 text-primary" />
-                <span className="hidden sm:inline">Download Full Report</span>
+                <span>Download Full Report</span>
               </Button>
 
               <div className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-xl border dark:border-slate-700 shadow-sm overflow-x-auto max-w-full no-scrollbar">
