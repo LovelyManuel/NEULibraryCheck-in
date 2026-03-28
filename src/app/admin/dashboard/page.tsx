@@ -459,6 +459,7 @@ export default function AdminDashboard(props: PageProps) {
               >
                 <RefreshCw className="h-4 w-4 text-primary" />
               </Button>
+              <ThemeToggle />
               <Button 
                 variant="outline" 
                 size="sm" 
