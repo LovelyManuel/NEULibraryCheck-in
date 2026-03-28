@@ -10,6 +10,7 @@ export interface LibraryUser {
   role: UserRole;
   collegeId: string;
   isBlocked: boolean;
+  visitorType?: string;
   createdAt: Timestamp;
 }
 
@@ -22,6 +23,7 @@ export interface LibraryVisit {
   collegeId: string;
   collegeName: string;
   program?: string;
+  visitorType?: string;
 }
 
 export interface College {
@@ -31,12 +33,18 @@ export interface College {
 
 export const VISIT_PURPOSES = [
   "Study",
-  "Assignment",
   "Research",
   "Book Return",
   "Book Borrowing",
+  "Clearance",
+  "Internet Usage",
   "Relaxing",
-  "Internet Usage"
+  "Assignment"
+];
+
+export const VISITOR_TYPES = [
+  "Student",
+  "Employee (Faculty/Staff)"
 ];
 
 export const DEPARTMENTS: Record<string, string> = {

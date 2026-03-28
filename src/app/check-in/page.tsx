@@ -3,14 +3,14 @@
 
 import { useState, useEffect, use } from "react";
 import { useAuth } from "@/app/components/auth-context";
-import { collection, addDoc, getDocs, Timestamp, query, orderBy } from "firebase/firestore";
+import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore";
 import { useFirebase } from "@/firebase";
-import { VISIT_PURPOSES, College, DEPARTMENTS } from "@/app/lib/types";
+import { VISIT_PURPOSES, College, DEPARTMENTS, VISITOR_TYPES } from "@/app/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Clock, Check, GraduationCap } from "lucide-react";
+import { Loader2, CheckCircle2, LogOut, ClipboardCheck, School, ShieldCheck, Clock, Check, GraduationCap, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -74,6 +74,7 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
   const { firestore } = useFirebase();
   const [colleges, setColleges] = useState<College[]>([]);
   const [purpose, setPurpose] = useState<string>("");
+  const [visitorType, setVisitorType] = useState<string>("");
   const [collegeId, setCollegeId] = useState<string>("");
   const [program, setProgram] = useState<string>("");
   const [actionLoading, setActionLoading] = useState(false);
@@ -83,6 +84,13 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
   const logoImage = 'https://neu.edu.ph/main/img/neu.png';
+
+  useEffect(() => {
+    // Pre-fill visitor type if already in profile
+    if (profile?.visitorType) {
+      setVisitorType(profile.visitorType);
+    }
+  }, [profile]);
 
   useEffect(() => {
     // STRICT INSTITUTIONAL ENFORCEMENT
@@ -107,7 +115,6 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
   }, [loading, user, router]);
 
   useEffect(() => {
-    // Initialize colleges from the DEPARTMENTS record
     const list = Object.entries(DEPARTMENTS).map(([id, name]) => ({
       id,
       name
@@ -131,13 +138,14 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !purpose || !collegeId || !firestore || !program) return;
+    if (!user || !purpose || !collegeId || !firestore || !program || !visitorType) return;
 
     const selectedCollege = colleges.find(c => c.id === collegeId);
     const finalCollegeName = selectedCollege?.name || "Unassigned";
 
     setActionLoading(true);
     try {
+      // 1. Log the Visit (Denormalized)
       await addDoc(collection(firestore, "visits"), {
         userId: user.uid,
         userName: user.displayName,
@@ -145,8 +153,16 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
         purposeOfVisit: purpose,
         collegeId: collegeId,
         collegeName: finalCollegeName,
-        program: program
+        program: program,
+        visitorType: visitorType
       });
+
+      // 2. Update the User Profile (Persistent Visitor Type)
+      if (profile?.visitorType !== visitorType) {
+        const userRef = doc(firestore, "users", user.uid);
+        await updateDoc(userRef, { visitorType: visitorType });
+      }
+
       setSubmitted(true);
     } catch (error) {
       console.error(error);
@@ -199,14 +215,15 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
             </div>
             
             <div className="space-y-4">
-              <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-headline">Success!</h2>
+              <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-headline italic">Success!</h2>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-primary tracking-tight font-headline">
+                <p className="text-2xl font-bold text-primary tracking-tight font-headline italic">
                   Welcome to NEU library, {getGreetingName()}!
                 </p>
                 <div className="flex flex-col text-sm text-slate-600 dark:text-slate-400 font-medium text-wrap">
                   <span>{currentCollegeName}</span>
                   <span className="text-primary/70">{program}</span>
+                  <span className="text-[10px] uppercase tracking-widest mt-1 opacity-50">{visitorType}</span>
                 </div>
               </div>
               <p className="text-slate-500 dark:text-slate-500 text-sm">Your visit has been logged. Happy studying!</p>
@@ -308,7 +325,24 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="visitorType" className="text-xs font-bold uppercase tracking-wider text-slate-400">Visitor Classification</Label>
+                      <div className="relative">
+                        <Select value={visitorType} onValueChange={setVisitorType} required>
+                          <SelectTrigger id="visitorType" className="h-12 border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 focus:ring-primary pl-10 rounded-xl">
+                            <SelectValue placeholder="Are you a Student or Employee?" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-slate-100 dark:border-slate-800 shadow-xl">
+                            {VISITOR_TYPES.map(v => (
+                              <SelectItem key={v} value={v}>{v}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <UserCircle className="absolute left-3 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="purpose" className="text-xs font-bold uppercase tracking-wider text-slate-400">Purpose of Visit</Label>
                       <Select value={purpose} onValueChange={setPurpose} required>
@@ -363,7 +397,7 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
                   <Button 
                     type="submit" 
                     className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-primary/20 transition-all rounded-xl active:scale-95" 
-                    disabled={actionLoading || !purpose || !collegeId || !program}
+                    disabled={actionLoading || !purpose || !collegeId || !program || !visitorType}
                   >
                     {actionLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Complete Check-in"}
                   </Button>

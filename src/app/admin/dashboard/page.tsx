@@ -4,7 +4,7 @@
 import { useState, useMemo, use } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection, query, where, orderBy, Timestamp, getDocs, limit } from "firebase/firestore";
+import { collection, query, where, orderBy, Timestamp, getDocs } from "firebase/firestore";
 import { LibraryVisit } from "@/app/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,10 +53,6 @@ import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 
-/**
- * EXPANDED COLOR PALETTE
- * Ensuring distinct colors for every college and purpose.
- */
 const COLORS = [
   '#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899',
   '#F43F5E', '#8B5CF6', '#06B6D4', '#84CC16', '#EAB308', '#F97316',
@@ -71,8 +67,8 @@ interface PageProps {
 
 export default function AdminDashboard({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  const unwrappedParams = use(params);
-  const unwrappedSearchParams = use(searchParams);
+  use(params);
+  use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -186,6 +182,17 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       .sort((a, b) => b.count - a.count);
   }, [visits]);
 
+  const statsByVisitorType = useMemo(() => {
+    const counts: Record<string, number> = {};
+    visits.forEach(v => {
+      const type = v.visitorType || "Student"; // Default to Student for older records
+      counts[type] = (counts[type] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [visits]);
+
   const handleExportPDF = () => {
     const doc = new jsPDF();
     const uniqueVisitors = new Set(visits.map(v => v.userId)).size;
@@ -225,50 +232,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       body: statsByCollege.map(c => [c.name, c.count.toString()]),
       headStyles: { fillColor: [41, 196, 224] },
       styles: { cellPadding: 3 }
-    });
-
-    const purposeStartY = (doc as any).lastAutoTable.finalY + 12;
-    doc.setFontSize(14);
-    doc.setTextColor(16, 185, 129);
-    doc.text("3. Visit Purpose Distribution", 14, purposeStartY);
-    autoTable(doc, {
-      startY: purposeStartY + 3,
-      head: [['Reason for Visit', 'Visitor Count']],
-      body: statsByPurpose.map(p => [p.name, p.count.toString()]),
-      headStyles: { fillColor: [16, 185, 129] },
-      styles: { cellPadding: 3 }
-    });
-
-    doc.addPage();
-
-    doc.setFontSize(14);
-    doc.setTextColor(99, 102, 241);
-    doc.text("4. Temporal Traffic Patterns", 14, 20);
-    autoTable(doc, {
-      startY: 23,
-      head: [['Time / Date Interval', 'Entries Recorded']],
-      body: statsByTime.map(t => [t.time, t.count.toString()]),
-      headStyles: { fillColor: [99, 102, 241] },
-      styles: { cellPadding: 3 }
-    });
-
-    const registryStartY = (doc as any).lastAutoTable.finalY + 12;
-    doc.setFontSize(14);
-    doc.setTextColor(51, 65, 85);
-    doc.text("5. Historical Entry Registry", 14, registryStartY);
-    autoTable(doc, {
-      startY: registryStartY + 3,
-      head: [['Visitor Name', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
-      body: visits.slice().reverse().map(v => [
-        v.userName || "Unknown",
-        v.collegeName || "Unknown",
-        v.program || "N/A",
-        v.purposeOfVisit,
-        v.timestamp.toDate().toLocaleDateString(),
-        v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      ]),
-      headStyles: { fillColor: [51, 65, 85] },
-      styles: { fontSize: 8, cellPadding: 2 }
     });
 
     doc.save(`NEU_Library_Full_Report_${range}_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -356,7 +319,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <Activity className="h-4 w-4 text-primary animate-pulse" />
                 <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Live Monitoring Pulse</span>
               </div>
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Overview</h1>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline italic">Overview</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">Strategic analysis of library attendance.</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
@@ -389,66 +352,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                     <TabsTrigger value="custom" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Custom</TabsTrigger>
                   </TabsList>
                 </Tabs>
-                
-                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm",
-                        range !== 'custom' && "hidden",
-                        !customRange && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-1.5 h-3 w-3" />
-                      {customRange?.from ? (
-                        customRange.to ? (
-                          <>{format(customRange.from, "MMM dd, yyyy")} - {format(customRange.to, "MMM dd, yyyy")}</>
-                        ) : (
-                          format(customRange.from, "MMM dd, yyyy")
-                        )
-                      ) : (
-                        <span>Select Range</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[360px] p-0 rounded-2xl border-none shadow-2xl overflow-hidden bg-white dark:bg-slate-900" align="end">
-                    <div className="p-6 space-y-6">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">Date Range</h3>
-                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="h-8 text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium">Reset</Button>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => pendingRange?.from && setCalendarMonth(pendingRange.from)} className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                          <div className="flex flex-col text-left">
-                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">{pendingRange?.from ? format(pendingRange.from, "EEEE") : "From"}</span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pendingRange?.from ? format(pendingRange.from, "dd MMMM, yyyy") : "Select date"}</span>
-                          </div>
-                          <ChevronDown className="h-3 w-3 text-slate-400" />
-                        </button>
-                        <div className="text-slate-300 font-medium">To</div>
-                        <button onClick={() => pendingRange?.to && setCalendarMonth(pendingRange.to)} className="flex-1 h-12 px-4 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl flex items-center justify-between shadow-inner hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                          <div className="flex flex-col text-left">
-                            <span className="text-[10px] font-bold text-primary leading-none mb-0.5">{pendingRange?.to ? format(pendingRange.to, "EEEE") : "To"}</span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pendingRange?.to ? format(pendingRange.to, "dd MMMM, yyyy") : "Select date"}</span>
-                          </div>
-                          <ChevronDown className="h-3 w-3 text-slate-400" />
-                        </button>
-                      </div>
-
-                      <div className="border rounded-2xl p-1 dark:border-slate-800 bg-white dark:bg-slate-900">
-                        <Calendar initialFocus mode="range" month={calendarMonth} onMonthChange={setCalendarMonth} selected={pendingRange} onSelect={setPendingRange} numberOfMonths={1} />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 hover:text-slate-900 dark:hover:white font-medium">Close</Button>
-                      <Button onClick={handleConfirmRange} className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl shadow-lg shadow-primary/20">Confirm</Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
           </div>
@@ -475,7 +378,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <p className="text-xs text-muted-foreground mt-2">Top institutional contributor</p>
               </CardContent>
             </Card>
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl sm:col-span-2 lg:col-span-1">
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Primary Purpose</CardTitle>
                 <Clock className="h-4 w-4 text-primary/40" />
@@ -487,63 +390,40 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
             </Card>
           </div>
 
-          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
-            <CardHeader className="px-0 pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Attendance Trend</CardTitle>
-                  <CardDescription>Temporal analysis of student visits</CardDescription>
-                </div>
-                <TrendingUp className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent className="h-[300px] px-0 pb-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={statsByTime}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
-                  <XAxis dataKey="time" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                  <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                  <ChartTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'var(--card)', color: 'var(--card-foreground)' }} />
-                  <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
               <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Departmental Analytics</CardTitle>
-                <CardDescription>Attendance by college</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Attendance Trend</CardTitle>
+                    <CardDescription>Temporal analysis of student visits</CardDescription>
+                  </div>
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
               </CardHeader>
-              <CardContent className="h-[350px] px-0 pb-0">
+              <CardContent className="h-[300px] px-0 pb-0">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
-                    <ChartTooltip cursor={false} content={({ active, payload }) => active && payload && payload.length ? (
-                      <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-2xl">
-                        <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].payload.name} count: {payload[0].value}</p>
-                      </div>
-                    ) : null} />
-                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
-                      {statsByCollege.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
+                  <LineChart data={statsByTime}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
+                    <XAxis dataKey="time" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
+                    <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
+                    <ChartTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', backgroundColor: 'var(--card)', color: 'var(--card-foreground)' }} />
+                    <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                  </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
             <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
               <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Primary Purpose Distribution</CardTitle>
-                <CardDescription>Reason for visits</CardDescription>
+                <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Visitor Classification</CardTitle>
+                <CardDescription>Ratio of students to employees</CardDescription>
               </CardHeader>
-              <CardContent className="h-[350px] px-0 pb-0 flex flex-col items-center justify-center">
+              <CardContent className="h-[300px] px-0 pb-0 flex flex-col items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={statsByPurpose} cx="50%" cy="45%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="count" style={{ outline: 'none' }}>
-                      {statsByPurpose.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />)}
+                    <Pie data={statsByVisitorType} cx="50%" cy="45%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="count" style={{ outline: 'none' }}>
+                      {statsByVisitorType.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />)}
                     </Pie>
                     <ChartTooltip content={({ active, payload }) => active && payload && payload.length ? (
                       <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-xl">
@@ -556,6 +436,29 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-4 lg:p-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">Departmental Analytics</CardTitle>
+              <CardDescription>Attendance by college</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[350px] px-0 pb-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" width={120} axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
+                  <ChartTooltip cursor={false} content={({ active, payload }) => active && payload && payload.length ? (
+                    <div className="bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-2xl">
+                      <p className="text-[10px] font-bold text-white uppercase tracking-tight">{payload[0].payload.name} count: {payload[0].value}</p>
+                    </div>
+                  ) : null} />
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
+                    {statsByCollege.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
           <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden mt-8">
             <CardHeader className="pb-3 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
@@ -580,8 +483,8 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                   <thead>
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
                       <th className="py-5 px-6">Visitor</th>
+                      <th className="py-5 px-6">Type</th>
                       <th className="py-5 px-6">College</th>
-                      <th className="py-5 px-6">Program</th>
                       <th className="py-5 px-6">Purpose</th>
                       <th className="py-5 px-6 text-right">Time</th>
                     </tr>
@@ -597,11 +500,13 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                             <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
                           </div>
                         </td>
-                        <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                          {visit.collegeName}
+                        <td className="py-5 px-6">
+                          <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+                            {visit.visitorType || "Student"}
+                          </span>
                         </td>
                         <td className="py-5 px-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                          {visit.program || "N/A"}
+                          {visit.collegeName}
                         </td>
                         <td className="py-5 px-6">
                           <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10 whitespace-nowrap">
