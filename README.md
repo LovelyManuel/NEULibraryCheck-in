@@ -30,15 +30,38 @@ The **NEU Library Portal** is the official gateway for New Era University studen
 - **Restriction:** Non-NEU accounts are blocked from proceeding.  
 - **Authentication Button:** *Continue with Google*.  
 
-### 📊 Dashboard Interface
-- **Check-in Form:** Purpose of Visit, College/Department, Program/Course.  
-- **Library Info Panel:** Operating hours and available services.  
-- **🎨 Theme System Button:** Students can switch between **🌙 Dark Mode**, **☀️ Light Mode**, or **⚙️ System Default**.  
+### 📊 Student Dashboard Interface
+The dashboard is divided into two main panels:
+
+#### 📝 Visit Registration (Student Check-in)
+- **Visitor Classification:** Dropdown to select type (e.g., Student, Faculty/Staff).  
+- **Purpose of Visit:** Dropdown to select reason (Research, Study, Assignment, Clearance, Book Return, Relaxing).  
+- **College / Department:** Dropdown to select college/department.  
+- **Program / Course:** Dropdown that updates based on selected college.  
+- **Complete Check-in Button:** Blue button to finalize registration.  
+
+#### 📚 Library Information Panel
+- **Operating Hours:**  
+  - Mon – Wed, Fri: 7:00 AM – 7:00 PM  
+  - Thu, Sat: 7:00 AM – 6:00 PM  
+- **Available Services:**  
+  - 📶 Free WiFi Access  
+  - 🖨️ Printing & Copying (Premium Service)  
+  - 📖 Book Lending  
+  - 💻 Digital Resources  
+
+#### 👤 User Profile
+- Displays student’s name and institutional email (e.g., *username@neu.edu.ph*).  
+
+#### 🎨 Theme System Button
+- Students can toggle between **🌙 Dark Mode**, **☀️ Light Mode**, or **⚙️ System Default** for a personalized interface.  
+
+---
 
 ### ✅ Confirmation Screen
 - Displays student details and confirms visit logging.  
 - ⏱️ Countdown timer returns to login screen.  
-- *✔️ Done* button allows manual exit.  
+- ✔️ *Done* button allows manual exit.  
 
 ---
 
@@ -50,16 +73,53 @@ The **NEU Library Portal** is the official gateway for New Era University studen
 - **Purpose:** Access library management tools.  
 
 ### 📊 Admin Dashboard – “LIVE MONITORING PULSE”
-- Strategic analysis of attendance.  
-- Filters: **📅 Today, 📆 Week, 🗓️ Month, 🎯 Custom Range**.  
-- **Custom Range Selector:** Calendar-based date selection.  
-- 📄 *Download Full Report* generates the **NEU Library Comprehensive Report**, which includes:  
-  1. 📊 Core Strategic Metrics  
-  2. 🏫 Institutional Attendance Breakdown  
-  3. 🎯 Visit Purpose Distribution  
-  4. ⏱️ Temporal Traffic Patterns  
-  5. 📑 Historical Entry Registry  
-- **🎨 Theme System Button:** Admins can toggle **🌙 Dark Mode**, **☀️ Light Mode**, or **⚙️ System Default**.  
+Provides a **strategic analysis of library attendance** with multiple panels and filters.
+
+#### Key Features
+- **Metrics Summary:**
+  - 📈 **Total Attendance:** Displays the number of visits.  
+  - 🏫 **Peak Department:** Highlights the top contributing college/department.  
+  - 🎯 **Primary Purpose:** Shows the most common reason for visits.  
+  - 👥 **Active Group:** Identifies whether visitors are Students or Employees (Faculty/Staff).  
+
+- **Attendance Trend Graph:**  
+  - ⏱️ Temporal analysis of student visits over selected dates.  
+  - Horizontal axis shows dates, vertical axis shows attendance frequency.  
+
+- **Visitor Classification:**  
+  - 🍩 Donut chart showing ratio of Students vs Employees (Faculty/Staff).  
+
+- **Departmental Analytics:**  
+  - 📊 Horizontal bar chart showing attendance by college.  
+
+- **Primary Purpose Distribution:**  
+  - 🍩 Donut chart showing reasons for visits.  
+
+- **Recent Registry Entry:**  
+  - 📑 Table of latest institutional visit logs, including:  
+    - Visitor name  
+    - Type (Student or Employee)  
+    - College/Department  
+    - Program/Course  
+    - Purpose of visit  
+    - Timestamp  
+
+- **Date Range & Filters:**  
+  - Quick filters: **📅 Today, 📆 Week, 🗓️ Month, 🎯 Custom**.  
+  - Custom range allows selecting specific start and end dates via calendar.  
+
+- **📄 Download Full Report:**  
+  - Generates the **NEU Library Comprehensive Report**, including:  
+    I. 📊 Core Strategic Metrics  
+    II. 🏫 Institutional Attendance Breakdown  
+    III. 🎯 Visit Purpose Distribution  
+    IV. ⏱️ Temporal Traffic Patterns  
+    V. 📑 Historical Entry Registry  
+
+- **🎨 Theme System Button:**  
+  - Admins can toggle between **🌙 Dark Mode**, **☀️ Light Mode**, or **⚙️ System Default**.  
+
+---
 
 ### 🔒 Access Control
 - 👥 Manage student permissions and monitor institutional access.  
