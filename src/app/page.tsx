@@ -105,7 +105,7 @@ export default function Home(props: PageProps) {
         )}
       </div>
 
-      <div className="relative z-10 w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center pb-24 md:pb-0">
         {portal === 'selection' && (
           <div className="mb-10 flex flex-col items-center">
             <div className="w-40 h-40 md:w-48 md:h-48 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border-2 border-white/30 shadow-2xl mb-8 p-6 transition-transform hover:scale-105 duration-500 overflow-hidden">
