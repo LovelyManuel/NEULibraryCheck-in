@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, use } from "react";
@@ -152,7 +151,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Audit Logs</h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Historical record of all library entries.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-headline">Historical record of all library entries.</p>
             </div>
             <div className="flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <ThemeToggle />
@@ -174,7 +173,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                 <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                 <Input 
                   placeholder="Search name, type, or college..." 
-                  className="pl-10 h-10 rounded-xl"
+                  className="pl-10 h-10 rounded-xl font-headline"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -204,13 +203,11 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                             {visit.visitorType || "Student"}
                           </span>
                         </td>
-                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
+                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400 font-headline">
                           {visit.collegeName}
                         </td>
-                        <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
-                            {visit.program || "N/A"}
-                          </span>
+                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400 font-headline">
+                          {visit.program || "N/A"}
                         </td>
                         <td className="py-5 px-6">
                           <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
@@ -219,10 +216,10 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                         </td>
                         <td className="py-5 px-6">
                           <div className="flex flex-col">
-                            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                            <span className="text-xs font-medium text-slate-700 dark:text-slate-300 font-headline">
                               {visit.timestamp.toDate().toLocaleDateString()}
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[10px] text-slate-400 font-headline">
                               {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>

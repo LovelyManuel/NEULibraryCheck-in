@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, use } from "react";
@@ -35,7 +34,8 @@ import {
   FileDown, 
   Menu,
   TrendingUp,
-  ChevronDown
+  ChevronDown,
+  Clock
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -80,7 +80,7 @@ const CustomYAxisTick = (props: any) => {
           y={index * 11 - (lines.length - 1) * 5.5}
           textAnchor="end"
           fill="currentColor"
-          className="fill-slate-400 dark:fill-slate-500 text-[9px] font-bold"
+          className="fill-slate-400 dark:fill-slate-500 text-[9px] font-bold font-headline"
         >
           {line}
         </text>
@@ -368,7 +368,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
           </div>
         </header>
 
-        <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-8">
+        <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-8 pb-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <div className="flex items-center gap-2 mb-1">
@@ -376,7 +376,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <span className="text-[10px] font-bold text-primary uppercase tracking-widest font-headline">Live Monitoring Pulse</span>
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Overview</h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Strategic analysis of library attendance.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-headline">Strategic analysis of library attendance.</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <Button 
@@ -395,7 +395,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary shadow-sm rounded-xl transition-all"
+                className="h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary shadow-sm rounded-xl transition-all font-headline"
                 onClick={handleExportPDF}
               >
                 <FileDown className="h-4 w-4 text-primary" />
@@ -536,7 +536,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 pb-10">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6">
               <CardHeader className="px-0 pt-0 relative">
                 <div className="flex items-center justify-between">
@@ -551,8 +551,8 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={statsByTime}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
-                    <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} />
-                    <YAxis fontSize={10} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
+                    <YAxis fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
                     <ChartTooltip content={<CustomTooltip />} />
                     <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
                   </LineChart>
@@ -638,6 +638,78 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                     <Legend content={<CustomPieLegend />} />
                   </PieChart>
                 </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Recent Registry Entry Section */}
+            <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6 xl:col-span-2 pb-10">
+              <CardHeader className="px-0 pt-0 flex flex-row items-center justify-between border-b dark:border-slate-800 pb-4">
+                <div>
+                  <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Recent Registry Entry</CardTitle>
+                  <CardDescription className="font-headline">Latest institutional visit logs</CardDescription>
+                </div>
+                <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-900">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-headline">Live Sync</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 mt-4">
+                <div className="overflow-x-auto no-scrollbar">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
+                        <th className="py-5 px-6">Visitor</th>
+                        <th className="py-5 px-6">Type</th>
+                        <th className="py-5 px-6">College</th>
+                        <th className="py-5 px-6">Program</th>
+                        <th className="py-5 px-6">Purpose</th>
+                        <th className="py-5 px-6">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {visits.slice().reverse().slice(0, 5).map((visit) => (
+                        <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="py-5 px-6">
+                            <p className="font-bold text-slate-900 dark:text-slate-100 text-sm font-headline">{visit.userName || "Unknown"}</p>
+                          </td>
+                          <td className="py-5 px-6">
+                            <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
+                              {visit.visitorType || "Student"}
+                            </span>
+                          </td>
+                          <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400 font-headline">
+                            {visit.collegeName}
+                          </td>
+                          <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400 font-headline">
+                            {visit.program || "N/A"}
+                          </td>
+                          <td className="py-5 px-6">
+                            <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline uppercase">
+                              {visit.purposeOfVisit}
+                            </span>
+                          </td>
+                          <td className="py-5 px-6">
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-slate-700 dark:text-slate-300 font-headline">
+                                {visit.timestamp.toDate().toLocaleDateString()}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-headline">
+                                {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {visits.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="text-center py-10">
+                            <p className="text-slate-400 text-sm font-headline">No registry entries found for this period.</p>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
           </div>
