@@ -39,7 +39,8 @@ import {
   Users,
   Library,
   Clock,
-  GraduationCap
+  GraduationCap,
+  Inbox
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -183,29 +184,6 @@ export default function AdminDashboard(props: PageProps) {
   const { data: visitsData, isLoading: visitsLoading } = useCollection<LibraryVisit>(visitsQuery);
   const visits = visitsData || [];
 
-  const handleRefresh = async () => {
-    if (isRefreshing || !db) return;
-    setIsRefreshing(true);
-    try {
-      const q = query(
-        collection(db, "visits"),
-        where("timestamp", ">=", dateFilter.start),
-        where("timestamp", "<=", dateFilter.end),
-        orderBy("timestamp", "asc")
-      );
-      await getDocs(q);
-      await new Promise(resolve => setTimeout(resolve, 800));
-      toast({
-        title: "Data Refreshed",
-        description: "Dashboard metrics have been updated.",
-      });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Refresh Failed", description: "Could not fetch fresh data." });
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   const handleReload = () => {
     window.location.reload();
   };
@@ -247,6 +225,8 @@ export default function AdminDashboard(props: PageProps) {
   }, [visits]);
 
   const statsByVisitorType = useMemo(() => {
+    if (visits.length === 0) return [];
+    
     const counts: Record<string, number> = { "Student": 0, "Employee (Faculty/Staff)": 0 };
     visits.forEach(v => {
       if (v.visitorType) {
@@ -642,7 +622,9 @@ export default function AdminDashboard(props: PageProps) {
               <div className="flex flex-col h-full justify-between">
                 <div>
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-3 font-headline">Active Group</h3>
-                  <div className="text-2xl font-bold font-headline tracking-tight text-slate-900 dark:text-slate-100">{statsByVisitorType[0]?.name || "N/A"}</div>
+                  <div className="text-2xl font-bold font-headline tracking-tight text-slate-900 dark:text-slate-100">
+                    {visits.length > 0 ? statsByVisitorType[0]?.name : "N/A"}
+                  </div>
                 </div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400 font-headline mt-auto">Most frequent visitor type</p>
               </div>
@@ -679,23 +661,32 @@ export default function AdminDashboard(props: PageProps) {
                 <CardDescription className="font-headline">Ratio of students to employees</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px] px-0 mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart style={{ outline: 'none' }}>
-                    <Pie 
-                      data={statsByVisitorType} 
-                      innerRadius={80} 
-                      outerRadius={120} 
-                      paddingAngle={5} 
-                      dataKey="count"
-                      stroke="none"
-                    >
-                      <Cell key="cell-classification-student" fill="#336BCC" />
-                      <Cell key="cell-classification-employee" fill="#10B981" />
-                    </Pie>
-                    <ChartTooltip content={<CustomTooltip />} />
-                    <Legend content={<CustomPieLegend />} />
-                  </PieChart>
-                </ResponsiveContainer>
+                {visits.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart style={{ outline: 'none' }}>
+                      <Pie 
+                        data={statsByVisitorType} 
+                        innerRadius={80} 
+                        outerRadius={120} 
+                        paddingAngle={5} 
+                        dataKey="count"
+                        stroke="none"
+                      >
+                        <Cell key="cell-classification-student" fill="#336BCC" />
+                        <Cell key="cell-classification-employee" fill="#10B981" />
+                      </Pie>
+                      <ChartTooltip content={<CustomTooltip />} />
+                      <Legend content={<CustomPieLegend />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                    <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
+                      <Users className="h-8 w-8" />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">No Entries Recorded</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -733,24 +724,33 @@ export default function AdminDashboard(props: PageProps) {
                 <CardDescription className="font-headline">Reason for visits</CardDescription>
               </CardHeader>
               <CardContent className="h-[380px] px-0 mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart style={{ outline: 'none' }}>
-                    <Pie 
-                      data={statsByPurpose} 
-                      innerRadius={80} 
-                      outerRadius={120} 
-                      paddingAngle={5} 
-                      dataKey="count"
-                      stroke="none"
-                    >
-                      {statsByPurpose.map((entry, index) => (
-                        <Cell key={`cell-purpose-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<CustomTooltip />} />
-                    <Legend content={<CustomPieLegend />} />
-                  </PieChart>
-                </ResponsiveContainer>
+                {visits.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart style={{ outline: 'none' }}>
+                      <Pie 
+                        data={statsByPurpose} 
+                        innerRadius={80} 
+                        outerRadius={120} 
+                        paddingAngle={5} 
+                        dataKey="count"
+                        stroke="none"
+                      >
+                        {statsByPurpose.map((entry, index) => (
+                          <Cell key={`cell-purpose-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<CustomTooltip />} />
+                      <Legend content={<CustomPieLegend />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                    <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
+                      <Inbox className="h-8 w-8" />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">No Entries Recorded</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
