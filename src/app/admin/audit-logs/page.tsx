@@ -135,6 +135,15 @@ export default function AuditLogsPage(props: PageProps) {
             <h2 className="font-bold text-sm text-slate-900 dark:text-slate-100 uppercase tracking-wider font-headline">NEU Library</h2>
           </div>
           <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-9 w-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
+              onClick={handleReload}
+              title="Reload"
+            >
+              <RefreshCw className="h-4 w-4 text-primary" />
+            </Button>
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
