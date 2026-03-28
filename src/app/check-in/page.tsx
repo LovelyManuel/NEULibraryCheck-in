@@ -277,7 +277,7 @@ export default function CheckInPage({ params, searchParams }: PageProps) {
           </div>
           <div className="flex items-center gap-4">
             {profile?.role === 'admin' && (
-              <Button variant="outline" size="sm" asChild className="hidden md:flex gap-2 border-primary/20 text-primary hover:bg-primary/5 rounded-xl dark:border-slate-800">
+              <Button variant="outline" size="sm" asChild className="flex gap-2 border-primary/20 text-primary hover:bg-primary/5 rounded-xl dark:border-slate-800">
                 <Link href="/admin/dashboard">
                   <ShieldCheck className="h-4 w-4" />
                   Admin Portal
