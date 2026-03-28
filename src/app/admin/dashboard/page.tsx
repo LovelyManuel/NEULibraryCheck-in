@@ -34,8 +34,7 @@ import {
   FileDown, 
   Menu,
   TrendingUp,
-  ChevronDown,
-  Clock
+  ChevronDown
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -124,7 +123,6 @@ interface PageProps {
 }
 
 export default function AdminDashboard(props: PageProps) {
-  // Unwrap Next.js 15 dynamic APIs
   const params = use(props.params);
   const searchParams = use(props.searchParams);
 
@@ -201,6 +199,10 @@ export default function AdminDashboard(props: PageProps) {
     } finally {
       setIsRefreshing(false);
     }
+  };
+
+  const handleReload = () => {
+    window.location.reload();
   };
 
   const statsByTime = useMemo(() => {
@@ -451,14 +453,11 @@ export default function AdminDashboard(props: PageProps) {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className={cn(
-                  "h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 transition-all hover:bg-primary/10 hover:text-primary",
-                  isRefreshing && "opacity-50"
-                )}
-                onClick={handleRefresh}
-                disabled={isRefreshing}
+                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 transition-all hover:bg-primary/10 hover:text-primary"
+                onClick={handleReload}
+                title="Reload"
               >
-                <RefreshCw className={cn("h-4 w-4 text-primary", isRefreshing && "animate-spin")} />
+                <RefreshCw className="h-4 w-4 text-primary" />
               </Button>
               <Button 
                 variant="outline" 

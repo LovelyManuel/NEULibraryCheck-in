@@ -13,7 +13,8 @@ import {
   Loader2, 
   Search, 
   Menu,
-  FileDown
+  FileDown,
+  RefreshCw
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -28,7 +29,6 @@ interface PageProps {
 }
 
 export default function AuditLogsPage(props: PageProps) {
-  // Unwrap Next.js 15 dynamic APIs
   const params = use(props.params);
   const searchParams = use(props.searchParams);
 
@@ -58,6 +58,10 @@ export default function AuditLogsPage(props: PageProps) {
       v.program?.toLowerCase().includes(term)
     );
   }, [visits, searchTerm]);
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
@@ -155,6 +159,15 @@ export default function AuditLogsPage(props: PageProps) {
               <p className="text-sm text-slate-600 dark:text-slate-400 font-headline">Historical record of all library entries.</p>
             </div>
             <div className="flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary"
+                onClick={handleReload}
+                title="Reload"
+              >
+                <RefreshCw className="h-4 w-4 text-primary" />
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm" 

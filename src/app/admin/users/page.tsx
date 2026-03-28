@@ -16,7 +16,8 @@ import {
   UserMinus, 
   UserCheck, 
   ShieldAlert, 
-  Menu
+  Menu,
+  RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -32,7 +33,6 @@ interface PageProps {
 }
 
 export default function UserManagement(props: PageProps) {
-  // Unwrap Next.js 15 dynamic APIs
   const params = use(props.params);
   const searchParams = use(props.searchParams);
 
@@ -76,6 +76,10 @@ export default function UserManagement(props: PageProps) {
       errorEmitter.emit('permission-error', contextualError);
       setLoading(false);
     });
+  };
+
+  const handleReload = () => {
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -175,6 +179,17 @@ export default function UserManagement(props: PageProps) {
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-white/50 dark:border-slate-800 inline-block shadow-lg">
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Access Control</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">Manage student permissions and monitor institutional access levels.</p>
+            </div>
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary"
+                onClick={handleReload}
+                title="Reload"
+              >
+                <RefreshCw className="h-4 w-4 text-primary" />
+              </Button>
             </div>
           </div>
 
