@@ -203,7 +203,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                           <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap">
                             {visit.visitorType || "Student"}
                           </span>
                         </td>
@@ -213,8 +213,10 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                         <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
                           {visit.program || "N/A"}
                         </td>
-                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
-                          {visit.purposeOfVisit}
+                        <td className="py-5 px-6">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap">
+                            {visit.purposeOfVisit}
+                          </span>
                         </td>
                         <td className="py-5 px-6">
                           <div className="flex flex-col">

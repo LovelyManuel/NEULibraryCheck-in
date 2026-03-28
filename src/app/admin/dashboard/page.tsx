@@ -441,7 +441,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                           variant="ghost" 
                           size="sm" 
                           onClick={handleResetRange} 
-                          className="text-slate-400 font-medium text-xs hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors"
+                          className="text-slate-400 font-bold text-xs hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors"
                         >
                           Reset
                         </Button>
