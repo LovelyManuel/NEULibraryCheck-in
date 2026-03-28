@@ -50,10 +50,9 @@ import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 
 const COLORS = [
-  '#336BCC', '#29C4E0', '#10B981', '#F59E0B', '#6366F1', '#EC4899',
-  '#F43F5E', '#8B5CF6', '#06B6D4', '#84CC16', '#EAB308', '#F97316',
-  '#EF4444', '#64748B', '#0891B2', '#059669', '#D97706', '#4F46E5',
-  '#DB2777', '#7C3AED'
+  '#336BCC', '#29C4E0', '#10B981', '#6366F1', '#EC4899', '#EAB308',
+  '#F43F5E', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316', '#EF4444',
+  '#64748B', '#0891B2', '#059669', '#D97706', '#4F46E5', '#DB2777'
 ];
 
 const CustomYAxisTick = (props: any) => {
@@ -257,13 +256,18 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
   const handleExportPDF = () => {
     const doc = new jsPDF();
     const uniqueVisitors = new Set(visits.map(v => v.userId)).size;
+
+    // Report Header
     doc.setFontSize(22);
     doc.setTextColor(51, 107, 204);
     doc.text("NEU Library Comprehensive Report", 14, 20);
+    
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Report Period: ${range.toUpperCase()}`, 14, 28);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
+
+    // 1. Core Strategic Metrics
     doc.setFontSize(14);
     doc.setTextColor(51, 107, 204);
     doc.text("1. Core Strategic Metrics", 14, 45);
@@ -279,17 +283,69 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       headStyles: { fillColor: [51, 107, 204] },
       styles: { cellPadding: 3 }
     });
-    const breakdownStartY = (doc as any).lastAutoTable.finalY + 12;
+
+    // 2. Institutional Attendance Breakdown
+    let currentY = (doc as any).lastAutoTable.finalY + 12;
     doc.setFontSize(14);
     doc.setTextColor(41, 196, 224);
-    doc.text("2. Institutional Attendance Breakdown", 14, breakdownStartY);
+    doc.text("2. Institutional Attendance Breakdown", 14, currentY);
     autoTable(doc, {
-      startY: breakdownStartY + 3,
+      startY: currentY + 3,
       head: [['Institutional College / Department', 'Visit Count']],
       body: statsByCollege.map(c => [c.name, c.count.toString()]),
       headStyles: { fillColor: [41, 196, 224] },
       styles: { cellPadding: 3 }
     });
+
+    // 3. Visit Purpose Distribution
+    currentY = (doc as any).lastAutoTable.finalY + 12;
+    if (currentY > 240) { doc.addPage(); currentY = 20; }
+    doc.setFontSize(14);
+    doc.setTextColor(16, 185, 129); // Green (#10B981)
+    doc.text("3. Visit Purpose Distribution", 14, currentY);
+    autoTable(doc, {
+      startY: currentY + 3,
+      head: [['Reason for Visit', 'Visitor Count']],
+      body: statsByPurpose.map(p => [p.name, p.count.toString()]),
+      headStyles: { fillColor: [16, 185, 129] },
+      styles: { cellPadding: 3 }
+    });
+
+    // 4. Temporal Traffic Patterns
+    currentY = (doc as any).lastAutoTable.finalY + 12;
+    if (currentY > 240) { doc.addPage(); currentY = 20; }
+    doc.setFontSize(14);
+    doc.setTextColor(99, 102, 241); // Purple (#6366F1)
+    doc.text("4. Temporal Traffic Patterns", 14, currentY);
+    autoTable(doc, {
+      startY: currentY + 3,
+      head: [['Time / Date Interval', 'Entries Recorded']],
+      body: statsByTime.map(t => [t.time, t.count.toString()]),
+      headStyles: { fillColor: [99, 102, 241] },
+      styles: { cellPadding: 3 }
+    });
+
+    // 5. Historical Entry Registry
+    currentY = (doc as any).lastAutoTable.finalY + 12;
+    if (currentY > 240) { doc.addPage(); currentY = 20; }
+    doc.setFontSize(14);
+    doc.setTextColor(51, 65, 85); // Dark Slate (#334155)
+    doc.text("5. Historical Entry Registry", 14, currentY);
+    autoTable(doc, {
+      startY: currentY + 3,
+      head: [['Visitor Name', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
+      body: visits.slice().reverse().map(v => [
+        v.userName || "Unknown",
+        v.collegeName || "N/A",
+        v.program || "N/A",
+        v.purposeOfVisit,
+        v.timestamp.toDate().toLocaleDateString(),
+        v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      ]),
+      headStyles: { fillColor: [51, 65, 85] },
+      styles: { cellPadding: 2, fontSize: 8 },
+    });
+
     doc.save(`NEU_Library_Full_Report_${range}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
