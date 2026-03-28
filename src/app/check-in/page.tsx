@@ -315,7 +315,6 @@ export default function CheckInPage(props: PageProps) {
                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70">Visit Registration</span>
                 </div>
                 <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{checkInTitle}</CardTitle>
-                <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{checkInTitle}</CardTitle>
                 <CardDescription className="text-slate-600 dark:text-slate-400">
                   Please provide your visit details below to enter the library.
                 </CardDescription>
