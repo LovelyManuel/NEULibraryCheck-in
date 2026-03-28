@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, use } from "react";
@@ -515,7 +516,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 font-headline">Peak Department</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold truncate text-slate-900 dark:text-slate-100 font-headline">{statsByCollege[0]?.name || "N/A"}</div>
+                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 font-headline">{statsByCollege[0]?.name || "N/A"}</div>
               </CardContent>
             </Card>
             <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl">
@@ -641,7 +642,6 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Recent Registry Entry Section */}
             <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl p-6 xl:col-span-2 pb-10">
               <CardHeader className="px-0 pt-0 flex flex-row items-center justify-between border-b dark:border-slate-800 pb-4">
                 <div>
