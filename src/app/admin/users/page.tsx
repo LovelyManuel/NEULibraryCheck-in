@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, use } from "react";
@@ -197,13 +198,15 @@ export default function UserManagement(props: PageProps) {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary shadow-sm"
+                className="hidden md:flex h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 transition-all hover:bg-primary/10 hover:text-primary shadow-sm"
                 onClick={handleReload}
                 title="Reload"
               >
                 <RefreshCw className="h-4 w-4 text-primary" />
               </Button>
-              <ThemeToggle />
+              <div className="hidden md:block">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
 
