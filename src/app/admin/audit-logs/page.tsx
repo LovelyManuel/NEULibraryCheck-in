@@ -155,7 +155,6 @@ export default function AuditLogsPage(props: PageProps) {
               <p className="text-sm text-slate-600 dark:text-slate-400 font-headline">Historical record of all library entries.</p>
             </div>
             <div className="flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
-              <ThemeToggle />
               <Button 
                 variant="outline" 
                 size="sm" 

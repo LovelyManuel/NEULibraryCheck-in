@@ -460,7 +460,6 @@ export default function AdminDashboard(props: PageProps) {
               >
                 <RefreshCw className={cn("h-4 w-4 text-primary", isRefreshing && "animate-spin")} />
               </Button>
-              <ThemeToggle />
               <Button 
                 variant="outline" 
                 size="sm" 
