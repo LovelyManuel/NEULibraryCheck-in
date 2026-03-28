@@ -23,8 +23,8 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4 w-full",
-        caption: "flex justify-center items-center h-10 relative mb-4 px-10",
-        caption_label: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline",
+        caption: "flex justify-center items-center h-10 relative mb-4",
+        caption_label: "text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline text-center",
         nav: "flex items-center absolute left-0 right-0 justify-between px-4 h-10 pointer-events-none",
         button_previous: cn(
           buttonVariants({ variant: "ghost" }),
