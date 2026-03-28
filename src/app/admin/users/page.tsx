@@ -176,9 +176,6 @@ export default function UserManagement(props: PageProps) {
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Access Control</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">Manage student permissions and monitor institutional access levels.</p>
             </div>
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
-              <ThemeToggle />
-            </div>
           </div>
 
           <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm overflow-hidden rounded-2xl">
