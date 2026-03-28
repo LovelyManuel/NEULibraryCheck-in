@@ -436,7 +436,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       ) : "Select Range"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[350px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
+                  <PopoverContent className="w-[calc(100vw-32px)] sm:w-[350px] max-w-lg p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
                     <div className="p-6 pb-2">
                       <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white font-headline">Date Range</h2>
