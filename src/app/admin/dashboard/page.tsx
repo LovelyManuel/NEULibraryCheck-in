@@ -426,7 +426,11 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       )}
                     >
                       <CalendarIcon className="mr-1.5 h-3 w-3" />
-                      {customRange?.from ? format(customRange.from, "MMM dd") : "Select Range"}
+                      {customRange?.from ? (
+                        customRange.to 
+                          ? `${format(customRange.from, "MMM dd")} - ${format(customRange.to, "MMM dd")}`
+                          : format(customRange.from, "MMM dd")
+                      ) : "Select Range"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[95vw] sm:w-[380px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
