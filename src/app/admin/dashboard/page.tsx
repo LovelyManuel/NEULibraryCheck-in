@@ -431,9 +431,9 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                   </PopoverTrigger>
                   <PopoverContent className="w-[95vw] sm:w-[380px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
                     <div className="p-6 pb-2">
-                      <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Date Range</h2>
-                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="text-slate-400 font-medium text-base hover:bg-transparent hover:text-slate-600">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Date Range</h2>
+                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="text-slate-400 font-medium text-sm hover:bg-transparent hover:text-slate-600">
                           Reset
                         </Button>
                       </div>
@@ -471,11 +471,11 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between p-6 mt-4 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 font-bold text-lg hover:bg-transparent">
+                    <div className="flex items-center justify-between p-5 mt-2 border-t dark:border-slate-800">
+                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 font-bold text-base hover:bg-transparent">
                         Close
                       </Button>
-                      <Button onClick={handleConfirmRange} className="bg-primary text-white px-8 py-6 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                      <Button onClick={handleConfirmRange} className="bg-primary text-white px-6 py-3 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                         Confirm
                       </Button>
                     </div>
