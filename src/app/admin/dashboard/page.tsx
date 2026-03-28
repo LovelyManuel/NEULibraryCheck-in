@@ -324,9 +324,10 @@ export default function AdminDashboard(props: PageProps) {
     doc.text("6. Historical Entry Registry", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
-      head: [['Visitor Name', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
+      head: [['Visitor Name', 'Type', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
       body: visits.slice().reverse().map(v => [
         v.userName || "Unknown",
+        v.visitorType || "Student",
         v.collegeName || "N/A",
         v.program || "N/A",
         v.purposeOfVisit,
@@ -639,7 +640,7 @@ export default function AdminDashboard(props: PageProps) {
                   <TrendingUp className="h-5 w-5 text-primary opacity-60" />
                 </div>
               </CardHeader>
-              <CardContent className="h-[400px] px-0">
+              <CardContent className="h-[400px] px-0 flex flex-col items-center justify-center">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={statsByTime} style={{ outline: 'none' }}>
@@ -651,7 +652,7 @@ export default function AdminDashboard(props: PageProps) {
                     </LineChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                  <div className="flex flex-col items-center justify-center text-slate-400 font-headline">
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <TrendingUp className="h-8 w-8" />
                     </div>
@@ -666,7 +667,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Visitor Classification</CardTitle>
                 <CardDescription className="font-headline">Ratio of students to employees</CardDescription>
               </CardHeader>
-              <CardContent className="h-[400px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4 flex flex-col items-center justify-center">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart style={{ outline: 'none' }}>
@@ -686,7 +687,7 @@ export default function AdminDashboard(props: PageProps) {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                  <div className="flex flex-col items-center justify-center text-slate-400 font-headline">
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <Users className="h-8 w-8" />
                     </div>
@@ -701,7 +702,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Departmental Analytics</CardTitle>
                 <CardDescription className="font-headline">Attendance by college</CardDescription>
               </CardHeader>
-              <CardContent className="h-[400px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4 flex flex-col items-center justify-center">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }} style={{ outline: 'none' }}>
@@ -723,7 +724,7 @@ export default function AdminDashboard(props: PageProps) {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                  <div className="flex flex-col items-center justify-center text-slate-400 font-headline">
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <Library className="h-8 w-8" />
                     </div>
@@ -738,7 +739,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Primary Purpose Distribution</CardTitle>
                 <CardDescription className="font-headline">Reason for visits</CardDescription>
               </CardHeader>
-              <CardContent className="h-[400px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4 flex flex-col items-center justify-center">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart style={{ outline: 'none' }}>
@@ -759,7 +760,7 @@ export default function AdminDashboard(props: PageProps) {
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                  <div className="flex flex-col items-center justify-center text-slate-400 font-headline">
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <Inbox className="h-8 w-8" />
                     </div>
