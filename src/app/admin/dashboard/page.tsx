@@ -437,9 +437,9 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[calc(100vw-32px)] sm:w-[350px] max-w-lg p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
-                    <div className="p-6 pb-2">
-                      <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-headline">Date Range</h2>
+                    <div className="p-4 sm:p-6 pb-2">
+                      <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-headline">Date Range</h2>
                         <Button 
                           variant="ghost" 
                           size="sm" 
@@ -450,21 +450,21 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                          <p className="text-[10px] font-bold text-primary uppercase mb-1.5 font-headline tracking-widest">FROM</p>
+                      <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                          <p className="text-[9px] sm:text-[10px] font-bold text-primary uppercase mb-1 sm:mb-1.5 font-headline tracking-widest">FROM</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
+                            <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
                               {pendingRange?.from ? format(pendingRange.from, "MMM dd") : "Select date"}
                             </span>
                             <ChevronDown className="h-3 w-3 text-slate-400" />
                           </div>
                         </div>
-                        <span className="text-[11px] font-bold text-slate-400 font-headline">To</span>
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                          <p className="text-[10px] font-bold text-primary uppercase mb-1.5 font-headline tracking-widest">TO</p>
+                        <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 font-headline">To</span>
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 sm:p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                          <p className="text-[9px] sm:text-[10px] font-bold text-primary uppercase mb-1 sm:mb-1.5 font-headline tracking-widest">TO</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
+                            <span className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 font-headline">
                               {pendingRange?.to ? format(pendingRange.to, "MMM dd") : "Select date"}
                             </span>
                             <ChevronDown className="h-3 w-3 text-slate-400" />
@@ -473,7 +473,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       </div>
                     </div>
 
-                    <div className="px-2">
+                    <div className="px-1 sm:px-2">
                       <Calendar 
                         mode="range" 
                         selected={pendingRange} 
@@ -483,7 +483,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between p-4 border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div className="flex items-center justify-between p-3 sm:p-4 border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -492,7 +492,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       >
                         Close
                       </Button>
-                      <Button size="sm" onClick={handleConfirmRange} className="bg-primary text-white px-8 h-10 rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-headline">
+                      <Button size="sm" onClick={handleConfirmRange} className="bg-primary text-white px-6 sm:px-8 h-9 sm:h-10 rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-headline">
                         Confirm
                       </Button>
                     </div>
