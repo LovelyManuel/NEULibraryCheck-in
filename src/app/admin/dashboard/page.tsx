@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, use } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection, query, where, orderBy, Timestamp, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, Timestamp } from "firebase/firestore";
 import { LibraryVisit } from "@/app/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,11 +133,9 @@ export default function AdminDashboard(props: PageProps) {
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
-  const { toast } = useToast();
   const [range, setRange] = useState<'today' | 'week' | 'month' | 'custom'>('today');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [pendingRange, setPendingRange] = useState<DateRange | undefined>();
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
@@ -643,15 +640,24 @@ export default function AdminDashboard(props: PageProps) {
                 </div>
               </CardHeader>
               <CardContent className="h-[400px] px-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={statsByTime} style={{ outline: 'none' }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
-                    <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
-                    <YAxis fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
-                    <ChartTooltip content={<CustomTooltip />} />
-                    <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {visits.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={statsByTime} style={{ outline: 'none' }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                      <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
+                      <YAxis fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
+                      <ChartTooltip content={<CustomTooltip />} />
+                      <Line type="monotone" dataKey="count" stroke="#336BCC" strokeWidth={3} dot={{ r: 4, fill: '#336BCC', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                    <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
+                      <TrendingUp className="h-8 w-8" />
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No attendance data recorded for this period.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -684,7 +690,7 @@ export default function AdminDashboard(props: PageProps) {
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <Users className="h-8 w-8" />
                     </div>
-                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">No Entries Recorded</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No entries recorded for this period.</p>
                   </div>
                 )}
               </CardContent>
@@ -696,25 +702,34 @@ export default function AdminDashboard(props: PageProps) {
                 <CardDescription className="font-headline">Attendance by college</CardDescription>
               </CardHeader>
               <CardContent className="h-[420px] px-0 mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }} style={{ outline: 'none' }}>
-                    <XAxis type="number" hide />
-                    <YAxis 
-                      dataKey="name" 
-                      type="category" 
-                      width={120} 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={<CustomYAxisTick />}
-                    />
-                    <ChartTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                    <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={22}>
-                      {statsByCollege.map((entry, index) => (
-                        <Cell key={`cell-college-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                {visits.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }} style={{ outline: 'none' }}>
+                      <XAxis type="number" hide />
+                      <YAxis 
+                        dataKey="name" 
+                        type="category" 
+                        width={120} 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={<CustomYAxisTick />}
+                      />
+                      <ChartTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                      <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={22}>
+                        {statsByCollege.map((entry, index) => (
+                          <Cell key={`cell-college-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 font-headline">
+                    <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
+                      <Library className="h-8 w-8" />
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No entries recorded for this period.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -748,7 +763,7 @@ export default function AdminDashboard(props: PageProps) {
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <Inbox className="h-8 w-8" />
                     </div>
-                    <p className="text-xs font-bold uppercase tracking-widest opacity-40">No Entries Recorded</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No entries recorded for this period.</p>
                   </div>
                 )}
               </CardContent>
