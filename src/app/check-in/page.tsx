@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, use } from "react";
@@ -288,7 +287,7 @@ export default function CheckInPage(props: PageProps) {
             
             <ThemeToggle />
 
-            <div className="text-right flex flex-col border-l pl-3 md:pl-4 border-slate-200 dark:border-slate-800">
+            <div className="text-right hidden sm:flex flex-col border-l pl-3 md:pl-4 border-slate-200 dark:border-slate-800">
               <p className="text-sm font-bold text-slate-900 dark:text-white leading-none truncate max-w-[120px] sm:max-w-none">{profile?.displayName}</p>
               <p className="text-[10px] text-muted-foreground lowercase tracking-wider font-medium mt-1 truncate max-w-[120px] sm:max-w-none">{profile?.email}</p>
             </div>
