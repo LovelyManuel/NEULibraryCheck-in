@@ -305,6 +305,11 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
     }
   };
 
+  const handleResetRange = () => {
+    setPendingRange(undefined);
+    setCustomRange(undefined);
+  };
+
   if (authLoading || (visitsLoading && visits.length === 0)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -400,30 +405,79 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                 <span className="hidden sm:inline">Download Full Report</span>
               </Button>
 
-              <div className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-xl border dark:border-slate-700 shadow-sm">
+              <div className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-xl border dark:border-slate-700 shadow-sm overflow-x-auto max-w-full no-scrollbar">
                 <Tabs value={range} onValueChange={(v) => setRange(v as any)}>
                   <TabsList className="bg-transparent h-8">
-                    <TabsTrigger value="today" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Today</TabsTrigger>
-                    <TabsTrigger value="week" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Week</TabsTrigger>
-                    <TabsTrigger value="month" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Month</TabsTrigger>
-                    <TabsTrigger value="custom" className="text-xs h-7 px-3 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Custom</TabsTrigger>
+                    <TabsTrigger value="today" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Today</TabsTrigger>
+                    <TabsTrigger value="week" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Week</TabsTrigger>
+                    <TabsTrigger value="month" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Month</TabsTrigger>
+                    <TabsTrigger value="custom" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Custom</TabsTrigger>
                   </TabsList>
                 </Tabs>
                 
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className={cn("h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm", range !== 'custom' && "hidden")}>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className={cn(
+                        "h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm transition-all duration-300",
+                        range !== 'custom' ? "hidden opacity-0" : "flex opacity-100 animate-in fade-in slide-in-from-left-2"
+                      )}
+                    >
                       <CalendarIcon className="mr-1.5 h-3 w-3" />
                       {customRange?.from ? format(customRange.from, "MMM dd") : "Select Range"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[360px] p-0 rounded-2xl border-none shadow-2xl bg-white dark:bg-slate-900" align="end">
-                    <div className="p-6 space-y-6">
-                      <Calendar mode="range" selected={pendingRange} onSelect={setPendingRange} numberOfMonths={1} />
+                  <PopoverContent className="w-[95vw] sm:w-[380px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
+                    <div className="p-6 pb-2">
+                      <div className="flex items-center justify-between mb-8">
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Date Range</h2>
+                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="text-slate-400 font-medium text-base hover:bg-transparent hover:text-slate-600">
+                          Reset
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
+                          <p className="text-[10px] font-bold text-primary uppercase mb-1">From</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-200">
+                              {pendingRange?.from ? format(pendingRange.from, "MMM dd, yyyy") : "Select date"}
+                            </span>
+                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                          </div>
+                        </div>
+                        <span className="text-slate-400 font-medium text-sm">To</span>
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
+                          <p className="text-[10px] font-bold text-primary uppercase mb-1">To</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-200">
+                              {pendingRange?.to ? format(pendingRange.to, "MMM dd, yyyy") : "Select date"}
+                            </span>
+                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-900/50 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)}>Close</Button>
-                      <Button onClick={handleConfirmRange} className="bg-primary text-white">Confirm</Button>
+
+                    <div className="px-6 py-2">
+                      <Calendar 
+                        mode="range" 
+                        selected={pendingRange} 
+                        onSelect={setPendingRange} 
+                        numberOfMonths={1} 
+                        className="w-full flex justify-center" 
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-6 mt-4 border-t dark:border-slate-800">
+                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 font-bold text-lg hover:bg-transparent">
+                        Close
+                      </Button>
+                      <Button onClick={handleConfirmRange} className="bg-primary text-white px-8 py-6 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                        Confirm
+                      </Button>
                     </div>
                   </PopoverContent>
                 </Popover>
