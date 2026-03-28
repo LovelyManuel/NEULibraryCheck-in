@@ -12,7 +12,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
-        headline: ['"Times New Roman"', 'Times', 'serif'],
+        headline: ['"Source Sans 3"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

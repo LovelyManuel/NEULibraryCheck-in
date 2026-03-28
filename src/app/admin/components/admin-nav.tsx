@@ -18,16 +18,38 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import placeholderData from "@/app/lib/placeholder-images.json";
+import { cn } from "@/lib/utils";
 
 export function AdminNav() {
   const { profile, logOut } = useAuthContext();
   const pathname = usePathname();
   const logoImage = placeholderData.placeholderImages.find(img => img.id === 'neu-logo')?.imageUrl || 'https://neu.edu.ph/main/img/neu.png';
 
+  const NavLink = ({ href, icon: Icon, label }: { href: string, icon: any, label: string }) => {
+    const isActive = pathname === href;
+    return (
+      <Link 
+        href={href} 
+        className={cn(
+          "flex items-center justify-between group px-4 py-3 rounded-xl transition-all duration-300",
+          isActive 
+            ? 'bg-primary text-white font-semibold shadow-lg shadow-primary/25' 
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <Icon className={cn("h-5 w-5", isActive ? "text-white" : "text-slate-400 group-hover:text-primary transition-colors")} />
+          <span className="text-[14px]">{label}</span>
+        </div>
+        {isActive && <ChevronRight className="h-4 w-4 opacity-70" />}
+      </Link>
+    );
+  };
+
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900 transition-colors duration-300">
-      <div className="p-8 flex items-center gap-3">
-        <div className="w-12 h-12 relative flex-shrink-0">
+      <div className="p-8 flex items-center gap-4">
+        <div className="w-14 h-14 relative flex-shrink-0">
           <Image 
             src={logoImage} 
             alt="NEU Logo" 
@@ -37,92 +59,71 @@ export function AdminNav() {
           />
         </div>
         <div>
-          <h2 className="font-bold text-lg text-slate-900 dark:text-white leading-none">NEU Library</h2>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mt-1.5">Staff Portal</p>
+          <h2 className="font-bold text-xl text-slate-900 dark:text-white leading-none font-headline">NEU Library</h2>
+          <p className="text-[10px] text-primary/70 uppercase tracking-widest font-bold mt-2">Staff Portal</p>
         </div>
       </div>
 
-      <nav className="flex-1 px-4 space-y-8">
+      <nav className="flex-1 px-4 space-y-9 overflow-y-auto no-scrollbar">
         <div>
-          <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Core Monitoring</p>
-          <div className="space-y-1">
-            <Link href="/admin/dashboard" className={`flex items-center justify-between group px-4 py-3 rounded-xl transition-all ${pathname === '/admin/dashboard' ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-              <div className="flex items-center gap-3">
-                <LayoutDashboard className="h-5 w-5" />
-                Overview
-              </div>
-              <ChevronRight className={`h-4 w-4 ${pathname === '/admin/dashboard' ? 'opacity-50' : 'opacity-0 group-hover:opacity-50'}`} />
-            </Link>
+          <p className="px-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4">Core Monitoring</p>
+          <div className="space-y-1.5">
+            <NavLink href="/admin/dashboard" icon={LayoutDashboard} label="Overview" />
           </div>
         </div>
 
         <div>
-          <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Data Management</p>
-          <div className="space-y-1">
-            <Link href="/admin/users" className={`flex items-center justify-between group px-4 py-3 rounded-xl transition-all ${pathname === '/admin/users' ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-              <div className="flex items-center gap-3">
-                <UserCog className="h-5 w-5" />
-                Access Control
-              </div>
-              <ChevronRight className={`h-4 w-4 ${pathname === '/admin/users' ? 'opacity-50' : 'opacity-0 group-hover:opacity-50'}`} />
-            </Link>
-            <Link href="/admin/audit-logs" className={`flex items-center justify-between group px-4 py-3 rounded-xl transition-all ${pathname === '/admin/audit-logs' ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-              <div className="flex items-center gap-3">
-                <FileText className="h-5 w-5" />
-                Audit Logs
-              </div>
-              <ChevronRight className={`h-4 w-4 ${pathname === '/admin/audit-logs' ? 'opacity-50' : 'opacity-0 group-hover:opacity-50'}`} />
-            </Link>
+          <p className="px-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4">Data Management</p>
+          <div className="space-y-1.5">
+            <NavLink href="/admin/users" icon={UserCog} label="Access Control" />
+            <NavLink href="/admin/audit-logs" icon={FileText} label="Audit Logs" />
             <Link href="/check-in" className="flex items-center justify-between group px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all">
               <div className="flex items-center gap-3">
-                <BookOpen className="h-5 w-5" />
-                Public View
+                <BookOpen className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                <span className="text-[14px]">Public View</span>
               </div>
-              <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-50 transition-all" />
             </Link>
           </div>
         </div>
 
         <div>
-          <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">System Health</p>
-          <div className="space-y-3 px-4 py-2">
+          <p className="px-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4">System Health</p>
+          <div className="space-y-3 px-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Activity className="h-3 w-3 text-emerald-500" />
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Database</span>
+                <Activity className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Database</span>
               </div>
-              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">ONLINE</span>
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-lg border border-emerald-100 dark:border-emerald-900">ONLINE</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-3 w-3 text-amber-500" />
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Security</span>
+                <AlertCircle className="h-4 w-4 text-amber-500" />
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Security</span>
               </div>
-              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">STABLE</span>
+              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-lg border border-amber-100 dark:border-amber-900">STABLE</span>
             </div>
           </div>
         </div>
       </nav>
 
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
-        <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center gap-3 border border-slate-100 dark:border-slate-700">
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20">
+      <div className="p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+        <div className="px-4 py-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-3 border border-slate-100 dark:border-slate-800 shadow-sm">
+          <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold border border-primary/20 text-lg">
             {profile?.displayName?.charAt(0) || "A"}
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-bold truncate text-slate-900 dark:text-white">{profile?.displayName}</p>
-            <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">Administrator</p>
+            <p className="text-[14px] font-bold truncate text-slate-900 dark:text-white leading-tight">{profile?.displayName}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-0.5">Administrator</p>
           </div>
         </div>
+        
         <button 
           onClick={logOut}
-          className="w-full flex items-center justify-between group px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/20 group"
         >
-          <div className="flex items-center gap-3">
-            <LogOut className="h-5 w-5 group-hover:text-primary transition-colors" />
-            <span className="font-medium group-hover:text-primary transition-colors">Sign Out</span>
-          </div>
-          <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-50 transition-all" />
+          <LogOut className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+          <span className="text-[14px] font-semibold group-hover:text-red-600 transition-colors">Sign Out</span>
         </button>
       </div>
     </div>

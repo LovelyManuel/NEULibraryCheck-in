@@ -14,9 +14,7 @@ import {
   Loader2, 
   Search, 
   Menu,
-  Clock,
-  FileDown,
-  UserCircle
+  FileDown
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -31,7 +29,6 @@ interface PageProps {
 }
 
 export default function AuditLogsPage({ params, searchParams }: PageProps) {
-  // Unwrap Next.js 15 dynamic APIs
   use(params);
   use(searchParams);
 
@@ -89,7 +86,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
 
   if (authLoading || (visitsLoading && visits.length === 0)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -100,7 +97,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col lg:flex-row relative transition-colors duration-300">
+    <div className="h-screen bg-slate-100 dark:bg-slate-950 flex relative overflow-hidden transition-colors duration-300 font-body">
       <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000">
         {bgImage && (
           <Image 
@@ -115,11 +112,11 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 dark:from-slate-950/70 via-transparent to-slate-200/40 dark:to-slate-900/70 backdrop-blur-[6px]" />
       </div>
 
-      <aside className="w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-r dark:border-slate-800 hidden lg:flex flex-col sticky top-0 h-screen overflow-y-auto z-30 shadow-xl border-slate-200/50">
+      <aside className="w-72 bg-white dark:bg-slate-900 border-r dark:border-slate-800 hidden lg:flex flex-col h-full z-30 shadow-xl border-slate-200/50">
         <AdminNav />
       </aside>
 
-      <main className="flex-1 overflow-auto relative z-10">
+      <main className="flex-1 overflow-y-auto relative z-10 flex flex-col h-full scroll-smooth">
         <header className="lg:hidden flex items-center justify-between p-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b dark:border-slate-800 sticky top-0 z-40">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 relative">
@@ -131,13 +128,13 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                 data-ai-hint="university logo"
               />
             </div>
-            <h2 className="font-bold text-sm text-slate-900 dark:text-slate-100 uppercase tracking-wider">NEU Library</h2>
+            <h2 className="font-bold text-sm text-slate-900 dark:text-slate-100 uppercase tracking-wider font-headline">NEU Library</h2>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary transition-all rounded-xl">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -151,11 +148,11 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
           </div>
         </header>
 
-        <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-8 pb-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 inline-block shadow-lg">
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Audit Logs</h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Historical record of all library entries and visitor activities.</p>
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-headline">Audit Logs</h1>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Historical record of all library entries.</p>
             </div>
             <div className="flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <ThemeToggle />
@@ -200,21 +197,23 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                     {filteredVisits.map((visit) => (
                       <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="py-5 px-6">
-                          <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
+                          <p className="font-bold text-slate-900 dark:text-slate-100 text-sm font-headline">{visit.userName || "Unknown"}</p>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
                             {visit.visitorType || "Student"}
                           </span>
                         </td>
                         <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
                           {visit.collegeName}
                         </td>
-                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
-                          {visit.program || "N/A"}
+                        <td className="py-5 px-6">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
+                            {visit.program || "N/A"}
+                          </span>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap">
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 whitespace-nowrap font-headline">
                             {visit.purposeOfVisit}
                           </span>
                         </td>
