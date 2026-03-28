@@ -89,8 +89,8 @@ export default function Home(props: PageProps) {
         <div className="absolute inset-0 bg-slate-900/65 backdrop-blur-[4px]" />
       </div>
 
-      {/* Real-time Clock - Desktop */}
-      <div className="absolute top-6 right-6 z-20 text-right hidden md:block">
+      {/* Real-time Clock */}
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-20 text-right">
         {currentTime && (
           <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-1000">
             <div className="flex items-center gap-3 text-white">
@@ -216,20 +216,6 @@ export default function Home(props: PageProps) {
       </div>
 
       <footer className="absolute bottom-6 w-full text-center z-10 px-6 flex flex-col items-center gap-2">
-        {/* Real-time Clock - Mobile */}
-        <div className="md:hidden mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
-          {currentTime && (
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-lg font-bold text-white tracking-tight leading-none font-headline">
-                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-              <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
-                {currentTime.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-              </span>
-            </div>
-          )}
-        </div>
-
         <p className="text-white text-sm font-bold tracking-widest font-sans">
           New Era University Library · Central, Quezon City
         </p>
