@@ -430,32 +430,37 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[95vw] sm:w-[380px] p-0 rounded-3xl border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden" align="end">
-                    <div className="p-6 pb-2">
+                    <div className="p-5 pb-1">
                       <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white">Date Range</h2>
-                        <Button variant="ghost" size="sm" onClick={handleResetRange} className="text-slate-400 font-medium text-sm hover:bg-transparent hover:text-slate-600">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleResetRange} 
+                          className="text-slate-400 font-medium text-xs hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors"
+                        >
                           Reset
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
                           <p className="text-[10px] font-bold text-primary uppercase mb-1">From</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-200">
+                            <span className="text-xs font-semibold text-slate-900 dark:text-slate-200">
                               {pendingRange?.from ? format(pendingRange.from, "MMM dd, yyyy") : "Select date"}
                             </span>
-                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                            <ChevronDown className="h-3 w-3 text-slate-400" />
                           </div>
                         </div>
-                        <span className="text-slate-400 font-medium text-sm">To</span>
-                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
+                        <span className="text-slate-400 font-medium text-xs">To</span>
+                        <div className="flex-1 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800 relative group">
                           <p className="text-[10px] font-bold text-primary uppercase mb-1">To</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-200">
+                            <span className="text-xs font-semibold text-slate-900 dark:text-slate-200">
                               {pendingRange?.to ? format(pendingRange.to, "MMM dd, yyyy") : "Select date"}
                             </span>
-                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                            <ChevronDown className="h-3 w-3 text-slate-400" />
                           </div>
                         </div>
                       </div>
@@ -471,11 +476,16 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between p-5 mt-2 border-t dark:border-slate-800">
-                      <Button variant="ghost" onClick={() => setIsPopoverOpen(false)} className="text-slate-500 font-bold text-base hover:bg-transparent">
+                    <div className="flex items-center justify-between p-4 mt-0 border-t dark:border-slate-800">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsPopoverOpen(false)} 
+                        className="text-slate-500 font-bold text-sm hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary transition-colors"
+                      >
                         Close
                       </Button>
-                      <Button onClick={handleConfirmRange} className="bg-primary text-white px-6 py-3 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                      <Button size="sm" onClick={handleConfirmRange} className="bg-primary text-white px-6 py-2 rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                         Confirm
                       </Button>
                     </div>
