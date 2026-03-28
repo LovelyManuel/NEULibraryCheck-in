@@ -257,7 +257,6 @@ export default function AdminDashboard(props: PageProps) {
     const doc = new jsPDF();
     const uniqueVisitors = new Set(visits.map(v => v.userId)).size;
 
-    // Report Header
     doc.setFontSize(22);
     doc.setTextColor(51, 107, 204);
     doc.text("NEU Library Comprehensive Report", 14, 20);
@@ -267,7 +266,6 @@ export default function AdminDashboard(props: PageProps) {
     doc.text(`Report Period: ${range.toUpperCase()}`, 14, 28);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
 
-    // 1. Core Strategic Metrics
     doc.setFontSize(14);
     doc.setTextColor(51, 107, 204);
     doc.text("1. Core Strategic Metrics", 14, 45);
@@ -284,7 +282,6 @@ export default function AdminDashboard(props: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 2. Institutional Attendance Breakdown
     let currentY = (doc as any).lastAutoTable.finalY + 12;
     doc.setFontSize(14);
     doc.setTextColor(41, 196, 224);
@@ -297,11 +294,10 @@ export default function AdminDashboard(props: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 3. Visitor Classification Distribution
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
-    doc.setTextColor(236, 72, 153); // Pink (#EC4899)
+    doc.setTextColor(236, 72, 153);
     doc.text("3. Visitor Classification Distribution", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
@@ -311,11 +307,10 @@ export default function AdminDashboard(props: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 4. Visit Purpose Distribution
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
-    doc.setTextColor(16, 185, 129); // Green (#10B981)
+    doc.setTextColor(16, 185, 129);
     doc.text("4. Visit Purpose Distribution", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
@@ -325,11 +320,10 @@ export default function AdminDashboard(props: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 5. Temporal Traffic Patterns
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
-    doc.setTextColor(99, 102, 241); // Purple (#6366F1)
+    doc.setTextColor(99, 102, 241);
     doc.text("5. Temporal Traffic Patterns", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
@@ -339,11 +333,10 @@ export default function AdminDashboard(props: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 6. Historical Entry Registry
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
-    doc.setTextColor(51, 65, 85); // Dark Slate (#334155)
+    doc.setTextColor(51, 65, 85);
     doc.text("6. Historical Entry Registry", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
@@ -389,6 +382,11 @@ export default function AdminDashboard(props: PageProps) {
 
   return (
     <div className="h-screen bg-slate-100 dark:bg-slate-950 flex relative overflow-hidden transition-colors duration-300 font-body">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .recharts-wrapper:focus, .recharts-surface:focus, .recharts-sector:focus {
+          outline: none !important;
+        }
+      ` }} />
       <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000">
         {bgImage && (
           <Image 
@@ -620,7 +618,7 @@ export default function AdminDashboard(props: PageProps) {
               </CardHeader>
               <CardContent className="h-[400px] px-0">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={statsByTime}>
+                  <LineChart data={statsByTime} style={{ outline: 'none' }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
                     <XAxis dataKey="time" fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
                     <YAxis fontSize={10} axisLine={false} tickLine={false} className="font-headline" />
@@ -638,7 +636,7 @@ export default function AdminDashboard(props: PageProps) {
               </CardHeader>
               <CardContent className="h-[350px] px-0 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <PieChart style={{ outline: 'none' }}>
                     <Pie 
                       data={statsByVisitorType} 
                       innerRadius={80} 
@@ -647,8 +645,8 @@ export default function AdminDashboard(props: PageProps) {
                       dataKey="count"
                       stroke="none"
                     >
-                      <Cell fill="#336BCC" />
-                      <Cell fill="#10B981" />
+                      <Cell key="cell-classification-student" fill="#336BCC" />
+                      <Cell key="cell-classification-employee" fill="#10B981" />
                     </Pie>
                     <ChartTooltip content={<CustomTooltip />} />
                     <Legend content={<CustomPieLegend />} />
@@ -664,7 +662,7 @@ export default function AdminDashboard(props: PageProps) {
               </CardHeader>
               <CardContent className="h-[420px] px-0 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }}>
+                  <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }} style={{ outline: 'none' }}>
                     <XAxis type="number" hide />
                     <YAxis 
                       dataKey="name" 
@@ -676,8 +674,8 @@ export default function AdminDashboard(props: PageProps) {
                     />
                     <ChartTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={22}>
-                      {statsByCollege.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {statsByCollege.map((entry, index) => (
+                        <Cell key={`cell-college-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -692,7 +690,7 @@ export default function AdminDashboard(props: PageProps) {
               </CardHeader>
               <CardContent className="h-[380px] px-0 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <PieChart style={{ outline: 'none' }}>
                     <Pie 
                       data={statsByPurpose} 
                       innerRadius={80} 
@@ -701,8 +699,8 @@ export default function AdminDashboard(props: PageProps) {
                       dataKey="count"
                       stroke="none"
                     >
-                      {statsByPurpose.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      {statsByPurpose.map((entry, index) => (
+                        <Cell key={`cell-purpose-${index}-${entry.name}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <ChartTooltip content={<CustomTooltip />} />
