@@ -106,23 +106,25 @@ export default function Home(props: PageProps) {
       </div>
 
       <div className="relative z-10 w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center">
-        <div className="mb-10 flex flex-col items-center">
-          <div className="w-40 h-40 md:w-48 md:h-48 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border-2 border-white/30 shadow-2xl mb-8 p-6 transition-transform hover:scale-105 duration-500 overflow-hidden">
-            <div className="relative w-full h-full">
-              <Image 
-                src={logoImage} 
-                alt="NEU Logo" 
-                fill 
-                className="object-contain"
-                data-ai-hint="university logo"
-              />
+        {portal === 'selection' && (
+          <div className="mb-10 flex flex-col items-center">
+            <div className="w-40 h-40 md:w-48 md:h-48 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border-2 border-white/30 shadow-2xl mb-8 p-6 transition-transform hover:scale-105 duration-500 overflow-hidden">
+              <div className="relative w-full h-full">
+                <Image 
+                  src={logoImage} 
+                  alt="NEU Logo" 
+                  fill 
+                  className="object-contain"
+                  data-ai-hint="university logo"
+                />
+              </div>
             </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white text-center mb-1 drop-shadow-md font-headline uppercase">
+              NEU Library Portal
+            </h1>
+            <p className="text-white/60 text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase">Institutional Access</p>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white text-center mb-1 drop-shadow-md font-headline uppercase">
-            NEU Library Portal
-          </h1>
-          <p className="text-white/60 text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase">Institutional Access</p>
-        </div>
+        )}
 
         <div className="max-w-md mx-auto w-full">
           {portal === 'selection' ? (
@@ -162,7 +164,7 @@ export default function Home(props: PageProps) {
               </Card>
             </div>
           ) : (
-            <Card className="border-2 border-white/30 shadow-2xl bg-white/10 backdrop-blur-xl overflow-hidden p-2 rounded-3xl">
+            <Card className="border-2 border-white/30 shadow-2xl bg-white/10 backdrop-blur-xl overflow-hidden p-2 rounded-3xl transition-all">
               <CardHeader className="text-center space-y-2 pb-6 pt-6 relative">
                 <button 
                   onClick={() => setPortal('selection')}
@@ -170,22 +172,22 @@ export default function Home(props: PageProps) {
                 >
                   <ArrowLeft className="h-6 w-6" />
                 </button>
-                <div className="mx-auto w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-1 border border-white/20">
-                  {portal === 'admin' ? <ShieldCheck className="h-7 w-7 text-white" /> : <UserCircle className="h-7 w-7 text-white" />}
+                <div className="mx-auto w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-1 border border-white/20">
+                  {portal === 'admin' ? <ShieldCheck className="h-10 w-10 text-white" /> : <UserCircle className="h-10 w-10 text-white" />}
                 </div>
-                <CardTitle className="text-2xl font-bold tracking-tight text-white font-headline">
+                <CardTitle className="text-3xl font-extrabold tracking-tight text-white font-headline">
                   {portal === 'admin' ? 'Staff Login' : 'Student Login'}
                 </CardTitle>
-                <CardDescription className="text-sm text-white/70">
+                <CardDescription className="text-base text-white/70 font-medium">
                   {portal === 'admin' 
                     ? 'Sign in to access library management tools.' 
                     : 'Please use your institutional Google account.'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pb-8 pt-0">
+              <CardContent className="space-y-6 pb-4 pt-0 text-center">
                 <Button 
                   size="lg" 
-                  className="w-full h-14 text-lg font-bold shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95 bg-white text-primary hover:bg-white/90 rounded-2xl font-headline"
+                  className="w-full h-16 text-xl font-extrabold shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95 bg-white text-primary hover:bg-white/90 rounded-2xl font-headline"
                   onClick={handleGoogleSignIn}
                   disabled={authLoading}
                 >
@@ -193,7 +195,7 @@ export default function Home(props: PageProps) {
                     <Loader2 className="h-6 w-6 animate-spin" />
                   ) : (
                     <>
-                      <GraduationCap className="h-6 w-6" />
+                      <GraduationCap className="h-7 w-7" />
                       Continue with Google
                     </>
                   )}
@@ -201,7 +203,7 @@ export default function Home(props: PageProps) {
 
                 <div className="flex items-center gap-4 py-2">
                   <div className="h-px bg-white/20 flex-1" />
-                  <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest font-headline">Secure Access</span>
+                  <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest font-headline">Secure Access</span>
                   <div className="h-px bg-white/20 flex-1" />
                 </div>
               </CardContent>
@@ -210,22 +212,21 @@ export default function Home(props: PageProps) {
         </div>
       </div>
 
-      <footer className="absolute bottom-6 w-full text-center z-10 px-6 space-y-3">
-        <p className="text-white text-[13px] md:text-sm font-bold tracking-wide">
+      <footer className="absolute bottom-6 w-full text-center z-10 px-6 flex flex-col items-center gap-3">
+        <p className="text-white text-sm font-bold tracking-tight">
           New Era University Library · Central, Quezon City
         </p>
-        
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-white/90 text-[10px] md:text-xs font-medium">
-          <div className="flex items-center gap-1.5 whitespace-nowrap">
-            <Phone className="h-3 w-3" />
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-white/90 text-[11px] md:text-sm font-bold">
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Phone className="h-4 w-4" />
             <span>(02) 7273-6345</span>
           </div>
-          <div className="flex items-center gap-1.5 whitespace-nowrap">
-            <Mail className="h-3 w-3" />
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Mail className="h-4 w-4" />
             <span>library@neu.edu.ph</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3 w-3 shrink-0" />
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 shrink-0" />
             <span className="leading-tight">No. 9 Central Avenue, New Era, Quezon City, 1107 Metro Manila</span>
           </div>
         </div>
