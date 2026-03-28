@@ -15,7 +15,8 @@ import {
   Search, 
   Menu,
   Clock,
-  FileDown
+  FileDown,
+  UserCircle
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -31,8 +32,8 @@ interface PageProps {
 
 export default function AuditLogsPage({ params, searchParams }: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  const unwrappedParams = use(params);
-  const unwrappedSearchParams = use(searchParams);
+  use(params);
+  use(searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -54,11 +55,10 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
     const term = searchTerm.toLowerCase();
     return visits.filter(v => 
       v.userName?.toLowerCase().includes(term) ||
+      v.visitorType?.toLowerCase().includes(term) ||
       v.purposeOfVisit?.toLowerCase().includes(term) ||
       v.collegeName?.toLowerCase().includes(term) ||
-      v.program?.toLowerCase().includes(term) ||
-      v.id?.toLowerCase().includes(term) ||
-      v.userId?.toLowerCase().includes(term)
+      v.program?.toLowerCase().includes(term)
     );
   }, [visits, searchTerm]);
 
@@ -68,21 +68,17 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
     doc.setTextColor(51, 107, 204);
     doc.text("NEU Library Audit Logs", 14, 20);
     
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
-    
     autoTable(doc, {
       startY: 35,
-      head: [['Visitor', 'College', 'Program', 'Purpose', 'Date', 'Time', 'Reference']],
+      head: [['Visitor', 'Type', 'College', 'Program', 'Purpose', 'Date', 'Time']],
       body: filteredVisits.map(v => [
         v.userName || "Unknown",
+        v.visitorType || "Student",
         v.collegeName || "Unknown",
         v.program || "N/A",
         v.purposeOfVisit,
         v.timestamp.toDate().toLocaleDateString(),
-        v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        v.id?.substring(0, 8) || "N/A"
+        v.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       ]),
       headStyles: { fillColor: [51, 107, 204] },
       styles: { fontSize: 7 },
@@ -104,7 +100,7 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col lg:flex-row relative transition-colors duration-300">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col lg:flex-row relative transition-colors duration-300">
       <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000">
         {bgImage && (
           <Image 
@@ -162,29 +158,26 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
               <p className="text-sm text-slate-600 dark:text-slate-400">Historical record of all library entries and visitor activities.</p>
             </div>
             <div className="flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
-              <div className="hidden lg:block">
-                <ThemeToggle />
-              </div>
+              <ThemeToggle />
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 shadow-sm rounded-xl"
-                onClick={handleExportPDF}
+                onClick={handleExportPDF} 
+                className="rounded-xl h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
               >
                 <FileDown className="h-4 w-4 text-primary" />
-                <span className="hidden sm:inline">Download Report</span>
-                <span className="sm:hidden">PDF</span>
+                <span className="hidden sm:inline">Download PDF</span>
               </Button>
             </div>
           </div>
 
           <Card className="border-none shadow-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-2xl overflow-hidden">
-            <CardHeader className="pb-3 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+            <CardHeader className="pb-3 border-b dark:border-slate-800">
               <div className="relative max-w-md w-full">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                 <Input 
-                  placeholder="Search name, college, or program..." 
-                  className="pl-10 h-10 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:ring-primary rounded-xl"
+                  placeholder="Search name, type, or college..." 
+                  className="pl-10 h-10 rounded-xl"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -196,50 +189,42 @@ export default function AuditLogsPage({ params, searchParams }: PageProps) {
                   <thead>
                     <tr className="text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b dark:border-slate-800">
                       <th className="py-5 px-6">Visitor</th>
+                      <th className="py-5 px-6">Type</th>
                       <th className="py-5 px-6">College</th>
                       <th className="py-5 px-6">Program</th>
                       <th className="py-5 px-6">Purpose</th>
                       <th className="py-5 px-6">Timestamp</th>
-                      <th className="py-5 px-6 text-right">Reference</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {filteredVisits.map((visit) => (
                       <tr key={visit.id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                         <td className="py-5 px-6">
-                          <div className="flex items-center gap-4">
-                            <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary font-bold border border-slate-200 dark:border-slate-700">
-                              {visit.userName?.charAt(0) || "U"}
-                            </div>
-                            <div>
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium">
-                          {visit.collegeName}
-                        </td>
-                        <td className="py-5 px-6 text-[10px] sm:text-xs lg:text-sm text-slate-500 dark:text-slate-400 font-medium">
-                          {visit.program || "N/A"}
+                          <p className="font-bold text-slate-900 dark:text-slate-100 text-sm">{visit.userName || "Unknown"}</p>
                         </td>
                         <td className="py-5 px-6">
-                          <span className="text-[9px] lg:text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10 whitespace-nowrap">
-                            {visit.purposeOfVisit}
+                          <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
+                            {visit.visitorType || "Student"}
                           </span>
                         </td>
+                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
+                          {visit.collegeName}
+                        </td>
+                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
+                          {visit.program || "N/A"}
+                        </td>
+                        <td className="py-5 px-6 text-sm text-slate-500 dark:text-slate-400">
+                          {visit.purposeOfVisit}
+                        </td>
                         <td className="py-5 px-6">
-                          <div className="flex flex-col whitespace-nowrap">
-                            <span className="text-xs lg:text-sm font-medium text-slate-700 dark:text-slate-300">
-                              {visit.timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          <div className="flex flex-col">
+                            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                              {visit.timestamp.toDate().toLocaleDateString()}
                             </span>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
+                            <span className="text-[10px] text-slate-400">
                               {visit.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
-                        </td>
-                        <td className="py-5 px-6 text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 font-medium text-right font-mono">
-                          {visit.id?.substring(0, 8)}
                         </td>
                       </tr>
                     ))}
