@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, use, useEffect } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
 import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, where, orderBy, Timestamp } from "firebase/firestore";
@@ -567,7 +567,7 @@ export default function AdminDashboard(props: PageProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border-none shadow-xl bg-primary text-white overflow-hidden rounded-[2rem] relative p-6 h-full flex flex-col min-h-[140px] group transition-all hover:scale-[1.02]">
+            <Card className="border-none shadow-xl bg-primary text-white overflow-hidden rounded-[2rem] relative p-6 h-full flex flex-col min-h-[150px] group transition-all hover:scale-[1.02]">
               <div className="absolute top-6 right-6 z-20 text-white/90">
                 <Users className="h-5 w-5" />
               </div>
@@ -586,7 +586,7 @@ export default function AdminDashboard(props: PageProps) {
               </div>
             </Card>
 
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[150px] relative group transition-all hover:scale-[1.02]">
               <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
                 <Library className="h-5 w-5" />
               </div>
@@ -599,7 +599,7 @@ export default function AdminDashboard(props: PageProps) {
               </div>
             </Card>
 
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[150px] relative group transition-all hover:scale-[1.02]">
               <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
                 <Clock className="h-5 w-5" />
               </div>
@@ -612,7 +612,7 @@ export default function AdminDashboard(props: PageProps) {
               </div>
             </Card>
 
-            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[140px] relative group transition-all hover:scale-[1.02]">
+            <Card className="border-none shadow-xl overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-[2rem] p-6 h-full flex flex-col min-h-[150px] relative group transition-all hover:scale-[1.02]">
               <div className="absolute top-6 right-6 text-primary/20 group-hover:text-primary/40 transition-colors">
                 <GraduationCap className="h-5 w-5" />
               </div>
@@ -655,7 +655,7 @@ export default function AdminDashboard(props: PageProps) {
                     <div className="w-32 h-32 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4 opacity-30">
                       <TrendingUp className="h-8 w-8" />
                     </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No attendance data recorded for this period.</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-headline opacity-40">No entries recorded for this period.</p>
                   </div>
                 )}
               </CardContent>
@@ -666,7 +666,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Visitor Classification</CardTitle>
                 <CardDescription className="font-headline">Ratio of students to employees</CardDescription>
               </CardHeader>
-              <CardContent className="h-[350px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart style={{ outline: 'none' }}>
@@ -701,7 +701,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Departmental Analytics</CardTitle>
                 <CardDescription className="font-headline">Attendance by college</CardDescription>
               </CardHeader>
-              <CardContent className="h-[420px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={statsByCollege} layout="vertical" margin={{ left: 10, right: 30 }} style={{ outline: 'none' }}>
@@ -738,7 +738,7 @@ export default function AdminDashboard(props: PageProps) {
                 <CardTitle className="text-lg font-bold text-slate-900 dark:text-white font-headline">Primary Purpose Distribution</CardTitle>
                 <CardDescription className="font-headline">Reason for visits</CardDescription>
               </CardHeader>
-              <CardContent className="h-[380px] px-0 mt-4">
+              <CardContent className="h-[400px] px-0 mt-4">
                 {visits.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart style={{ outline: 'none' }}>
