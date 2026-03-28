@@ -11,7 +11,8 @@ import {
   ArrowLeft,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Clock
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
@@ -32,9 +33,20 @@ export default function Home(props: PageProps) {
   const router = useRouter();
   const [portal, setPortal] = useState<'selection' | 'student' | 'admin'>('selection');
   const [authLoading, setAuthLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   const bgImage = placeholderData.placeholderImages.find(img => img.id === 'neu-library-bg')?.imageUrl || '';
   const logoImage = 'https://neu.edu.ph/main/img/neu.png';
+
+  useEffect(() => {
+    // Initial sync
+    setCurrentTime(new Date());
+    // Update every second
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleGoogleSignIn = async () => {
     setAuthLoading(true);
@@ -62,7 +74,7 @@ export default function Home(props: PageProps) {
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 md:p-6 overflow-hidden font-body">
+    <div className="min-h-screen relative flex items-center justify-center p-4 md:p-6 overflow-hidden font-body text-slate-900 dark:text-slate-100">
       <div className="absolute inset-0 z-0">
         {bgImage && (
           <Image 
@@ -75,6 +87,25 @@ export default function Home(props: PageProps) {
           />
         )}
         <div className="absolute inset-0 bg-slate-900/65 backdrop-blur-[4px]" />
+      </div>
+
+      {/* Real-time Clock - Desktop */}
+      <div className="absolute top-6 right-6 z-20 text-right hidden md:block">
+        {currentTime && (
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-1000">
+            <div className="flex items-center gap-3 text-white">
+              <Clock className="h-4 w-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-tight leading-none font-headline">
+                  {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+                <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-1">
+                  {currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="relative z-10 w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700 pb-32">
@@ -92,7 +123,7 @@ export default function Home(props: PageProps) {
               </div>
             </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white text-center mb-1 drop-shadow-md font-headline whitespace-nowrap">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white text-center mb-1 drop-shadow-md font-headline whitespace-nowrap uppercase">
             NEU Library Portal
           </h1>
           <p className="text-slate-300 text-sm font-bold tracking-widest uppercase opacity-80">Institutional Access</p>
@@ -111,7 +142,7 @@ export default function Home(props: PageProps) {
                       <UserCircle className="h-9 w-9" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-2xl font-bold tracking-tight">Student Portal</span>
+                      <span className="text-2xl font-bold tracking-tight font-headline">Student Portal</span>
                       <span className="text-[10px] text-white/70 uppercase tracking-[0.2em] font-bold">Institutional Account</span>
                     </div>
                   </div>
@@ -128,7 +159,7 @@ export default function Home(props: PageProps) {
                       <ShieldCheck className="h-9 w-9" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-2xl font-bold tracking-tight">Admin Portal</span>
+                      <span className="text-2xl font-bold tracking-tight font-headline">Admin Portal</span>
                       <span className="text-[10px] text-white/60 uppercase tracking-[0.2em] font-bold">Authorized Staff Only</span>
                     </div>
                   </div>
@@ -147,7 +178,7 @@ export default function Home(props: PageProps) {
                 <div className="mx-auto w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-1 border border-white/20">
                   {portal === 'admin' ? <ShieldCheck className="h-7 w-7 text-white" /> : <UserCircle className="h-7 w-7 text-white" />}
                 </div>
-                <CardTitle className="text-2xl font-bold tracking-tight text-white">
+                <CardTitle className="text-2xl font-bold tracking-tight text-white font-headline">
                   {portal === 'admin' ? 'Staff Login' : 'Student Login'}
                 </CardTitle>
                 <CardDescription className="text-sm text-white/70">
@@ -159,7 +190,7 @@ export default function Home(props: PageProps) {
               <CardContent className="space-y-6 pb-8 pt-0">
                 <Button 
                   size="lg" 
-                  className="w-full h-14 text-lg font-bold shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95 bg-white text-primary hover:bg-white/90 rounded-xl"
+                  className="w-full h-14 text-lg font-bold shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95 bg-white text-primary hover:bg-white/90 rounded-xl font-headline"
                   onClick={handleGoogleSignIn}
                   disabled={authLoading}
                 >
@@ -175,7 +206,7 @@ export default function Home(props: PageProps) {
 
                 <div className="flex items-center gap-4 py-2">
                   <div className="h-px bg-white/20 flex-1" />
-                  <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Secure Access</span>
+                  <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest font-headline">Secure Access</span>
                   <div className="h-px bg-white/20 flex-1" />
                 </div>
               </CardContent>
@@ -185,6 +216,20 @@ export default function Home(props: PageProps) {
       </div>
 
       <footer className="absolute bottom-6 w-full text-center z-10 px-6 flex flex-col items-center gap-2">
+        {/* Real-time Clock - Mobile */}
+        <div className="md:hidden mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
+          {currentTime && (
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-lg font-bold text-white tracking-tight leading-none font-headline">
+                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+              <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
+                {currentTime.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+          )}
+        </div>
+
         <p className="text-white text-sm font-bold tracking-widest font-sans">
           New Era University Library · Central, Quezon City
         </p>
