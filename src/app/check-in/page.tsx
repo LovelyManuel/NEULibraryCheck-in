@@ -287,9 +287,9 @@ export default function CheckInPage(props: PageProps) {
             
             <ThemeToggle />
 
-            <div className="text-right hidden sm:block border-l pl-4 border-slate-200 dark:border-slate-800">
-              <p className="text-sm font-bold text-slate-900 dark:text-white leading-none">{profile?.displayName}</p>
-              <p className="text-[10px] text-muted-foreground lowercase tracking-wider font-medium mt-1">{profile?.email}</p>
+            <div className="text-right block border-l pl-3 md:pl-4 border-slate-200 dark:border-slate-800">
+              <p className="text-sm font-bold text-slate-900 dark:text-white leading-none truncate max-w-[120px] sm:max-w-none">{profile?.displayName}</p>
+              <p className="text-[10px] text-muted-foreground lowercase tracking-wider font-medium mt-1 truncate max-w-[120px] sm:max-w-none">{profile?.email}</p>
             </div>
             
             <Button 
@@ -314,6 +314,7 @@ export default function CheckInPage(props: PageProps) {
                   <ClipboardCheck className="h-5 w-5 text-primary" />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70">Visit Registration</span>
                 </div>
+                <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{checkInTitle}</CardTitle>
                 <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{checkInTitle}</CardTitle>
                 <CardDescription className="text-slate-600 dark:text-slate-400">
                   Please provide your visit details below to enter the library.
