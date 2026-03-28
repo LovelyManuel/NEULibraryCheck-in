@@ -297,12 +297,26 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 3. Visit Purpose Distribution
+    // 3. Visitor Classification Distribution
+    currentY = (doc as any).lastAutoTable.finalY + 12;
+    if (currentY > 240) { doc.addPage(); currentY = 20; }
+    doc.setFontSize(14);
+    doc.setTextColor(236, 72, 153); // Pink (#EC4899)
+    doc.text("3. Visitor Classification Distribution", 14, currentY);
+    autoTable(doc, {
+      startY: currentY + 3,
+      head: [['Classification', 'Count']],
+      body: statsByVisitorType.map(v => [v.name, v.count.toString()]),
+      headStyles: { fillColor: [236, 72, 153] },
+      styles: { cellPadding: 3 }
+    });
+
+    // 4. Visit Purpose Distribution
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
     doc.setTextColor(16, 185, 129); // Green (#10B981)
-    doc.text("3. Visit Purpose Distribution", 14, currentY);
+    doc.text("4. Visit Purpose Distribution", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
       head: [['Reason for Visit', 'Visitor Count']],
@@ -311,12 +325,12 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 4. Temporal Traffic Patterns
+    // 5. Temporal Traffic Patterns
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
     doc.setTextColor(99, 102, 241); // Purple (#6366F1)
-    doc.text("4. Temporal Traffic Patterns", 14, currentY);
+    doc.text("5. Temporal Traffic Patterns", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
       head: [['Time / Date Interval', 'Entries Recorded']],
@@ -325,12 +339,12 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
       styles: { cellPadding: 3 }
     });
 
-    // 5. Historical Entry Registry
+    // 6. Historical Entry Registry
     currentY = (doc as any).lastAutoTable.finalY + 12;
     if (currentY > 240) { doc.addPage(); currentY = 20; }
     doc.setFontSize(14);
     doc.setTextColor(51, 65, 85); // Dark Slate (#334155)
-    doc.text("5. Historical Entry Registry", 14, currentY);
+    doc.text("6. Historical Entry Registry", 14, currentY);
     autoTable(doc, {
       startY: currentY + 3,
       head: [['Visitor Name', 'Department', 'Program', 'Purpose', 'Date', 'Time']],
