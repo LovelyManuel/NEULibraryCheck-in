@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import { useState, useEffect, use } from "react";
 import { useAuth } from "@/app/components/auth-context";
@@ -65,9 +64,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function CheckInPage({ params, searchParams }: PageProps) {
-  use(params);
-  use(searchParams);
+export default function CheckInPage(props: PageProps) {
+  // Unwrap Next.js 15 dynamic APIs
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   const { user, profile, loading, logOut } = useAuth();
   const { firestore } = useFirebase();

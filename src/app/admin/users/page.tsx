@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, use } from "react";
@@ -34,8 +33,8 @@ interface PageProps {
 
 export default function UserManagement(props: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(props.params);
-  use(props.searchParams);
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();
@@ -177,7 +176,7 @@ export default function UserManagement(props: PageProps) {
               <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Access Control</h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">Manage student permissions and monitor institutional access levels.</p>
             </div>
-            <div className="hidden lg:block bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-white/50 dark:border-slate-800 shadow-lg">
               <ThemeToggle />
             </div>
           </div>

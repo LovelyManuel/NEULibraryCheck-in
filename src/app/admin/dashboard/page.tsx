@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import { useState, useMemo, use } from "react";
 import { useAuth as useAuthContext } from "@/app/components/auth-context";
@@ -124,9 +123,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function AdminDashboard({ params, searchParams }: PageProps) {
-  use(params);
-  use(searchParams);
+export default function AdminDashboard(props: PageProps) {
+  // Unwrap Next.js 15 dynamic APIs
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   const { profile, loading: authLoading } = useAuthContext();
   const db = useFirestore();

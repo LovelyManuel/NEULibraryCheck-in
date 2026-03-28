@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth as useAuthContext } from '@/app/components/auth-context';
@@ -24,10 +23,10 @@ interface PageProps {
   searchParams: Promise<any>;
 }
 
-export default function Home({ params, searchParams }: PageProps) {
+export default function Home(props: PageProps) {
   // Unwrap Next.js 15 dynamic APIs
-  use(params);
-  use(searchParams);
+  const params = use(props.params);
+  const searchParams = use(props.searchParams);
 
   const { user, profile, loading, signIn } = useAuthContext();
   const router = useRouter();
