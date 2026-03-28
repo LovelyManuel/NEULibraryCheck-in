@@ -388,7 +388,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className={`h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 transition-all ${isRefreshing ? 'opacity-50' : ''}`}
+                className={`h-9 w-9 rounded-xl bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 transition-all hover:bg-primary/10 hover:text-primary ${isRefreshing ? 'opacity-50' : ''}`}
                 onClick={handleRefresh}
                 disabled={isRefreshing}
               >
@@ -398,7 +398,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 shadow-sm rounded-xl"
+                className="h-9 gap-2 bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-primary/10 hover:text-primary shadow-sm rounded-xl transition-all"
                 onClick={handleExportPDF}
               >
                 <FileDown className="h-4 w-4 text-primary" />
@@ -408,10 +408,10 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
               <div className="flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 p-1 rounded-xl border dark:border-slate-700 shadow-sm overflow-x-auto max-w-full no-scrollbar">
                 <Tabs value={range} onValueChange={(v) => setRange(v as any)}>
                   <TabsList className="bg-transparent h-8">
-                    <TabsTrigger value="today" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Today</TabsTrigger>
-                    <TabsTrigger value="week" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Week</TabsTrigger>
-                    <TabsTrigger value="month" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Month</TabsTrigger>
-                    <TabsTrigger value="custom" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all">Custom</TabsTrigger>
+                    <TabsTrigger value="today" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all hover:bg-primary/10 hover:text-primary">Today</TabsTrigger>
+                    <TabsTrigger value="week" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all hover:bg-primary/10 hover:text-primary">Week</TabsTrigger>
+                    <TabsTrigger value="month" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all hover:bg-primary/10 hover:text-primary">Month</TabsTrigger>
+                    <TabsTrigger value="custom" className="text-[10px] lg:text-xs h-7 px-2 lg:px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all hover:bg-primary/10 hover:text-primary">Custom</TabsTrigger>
                   </TabsList>
                 </Tabs>
                 
@@ -421,7 +421,7 @@ export default function AdminDashboard({ params, searchParams }: PageProps) {
                       variant="outline" 
                       size="sm" 
                       className={cn(
-                        "h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm transition-all duration-300",
+                        "h-7 ml-1 px-2 text-[10px] font-medium border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm transition-all duration-300 hover:bg-primary/10 hover:text-primary",
                         range !== 'custom' ? "hidden opacity-0" : "flex opacity-100 animate-in fade-in slide-in-from-left-2"
                       )}
                     >
